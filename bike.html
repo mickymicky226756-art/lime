@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LimeBikes | Invest & Earn</title>
+
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2972/2972185.png">    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
+    <style>
+        /* --- Modern LimeBikes Theme --- */
+        :root {
+            --primary-color: #32CD32; /* Lime Green */
+            --primary-dark: #228B22;  /* Forest Green */
+            --primary-light: #e8f5e9; 
+            --accent-green: #0ea5e9;  /* Tech Cyan/Blue */
+            --accent-green-light: #e0f2fe;
+            --text-main: #18181b;
+            --text-muted: #52525b;
+            --bg-body: #09090b; 
+            --card-bg: rgba(255, 255, 255, 1);
+            --shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
+            --shadow-float: 0 10px 25px rgba(50, 205, 50, 0.3);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-pill: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        
+        body {
+            background: #ffffff; /* Changed to solid white */
+            color: var(--text-main);
+            min-height: 100vh;
+            padding-bottom: 100px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            display: none; /* Removed the background gradient overlay */
+        }
+
+        @keyframes slideUpFade { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-up { animation: slideUpFade 0.4s ease-out forwards; }
+
+        header {
+            background: transparent;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 0; width: 100%;
+            z-index: 100;
+        }
+
+        .logo { 
+            font-size: 1.6rem; 
+            font-weight: 800; 
+            color: var(--text-main); 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -1px;
+        }
+        .logo i { color: var(--primary-color); }
+
+        /* --- አዲስ የተጨመረው ዘመናዊ የባላንስ ማሳያ ዲዛይን --- */
+        .top-balance {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            cursor: pointer;
+            border: 1px solid rgba(50, 205, 50, 0.3);
+            transition: 0.2s ease;
+        }
+        .top-balance:active { transform: scale(0.95); }
+        .top-balance i { color: var(--primary-color); font-size: 1.1rem; }
+        .top-balance span { font-weight: 800; color: var(--text-main); font-size: 0.85rem; }
+
+        .view-section { display: none; padding-top: 80px; }
+        .view-section.active-view { display: block; }
+
+        .quick-actions {
+            display: flex; flex-wrap: wrap; justify-content: space-around;
+            row-gap: 20px; padding: 0 10px; margin-bottom: 30px;
+        }
+        .action-circle {
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; width: 30%; 
+        }
+        .action-circle .icon-box {
+            width: 55px; height: 55px; border-radius: 14px;
+            background: white; color: var(--text-main);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.4rem; box-shadow: var(--shadow-soft); transition: 0.3s;
+        }
+        .action-circle:hover .icon-box { transform: translateY(-5px); border-bottom: 3px solid var(--primary-color); }
+        .action-circle span { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+        .page-header { text-align: center; padding: 20px 20px 30px; position: relative; }
+        .page-header h2 { font-size: 1.6rem; color: var(--text-main); font-weight: 800; text-transform: uppercase; }
+        .page-header p { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
+        
+        .back-btn { 
+            position: absolute; left: 20px; top: 20px; width: 40px; height: 40px; border-radius: 10px;
+            background: white; border: none; box-shadow: var(--shadow-soft);
+            color: var(--text-main); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        .content-box {
+            background: var(--card-bg); border-radius: 24px 24px 0 0;
+            padding: 30px 20px; min-height: calc(100vh - 150px);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.03);
+        }
+
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        input, select { 
+            width: 100%; padding: 15px 20px; background: #f4f4f5; 
+            border: 1px solid #e4e4e7; border-radius: 12px; 
+            font-size: 1rem; color: var(--text-main); outline: none; transition: 0.3s; 
+        }
+        input:focus, select:focus { border-color: var(--primary-color); background: white; }
+        
+        .btn-full { 
+            width: 100%; padding: 16px; background: var(--text-main); 
+            color: var(--primary-color); border: none; border-radius: 12px; font-size: 1rem; 
+            font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        .btn-full:active { transform: translateY(2px); box-shadow: none; }
+
+        /* BOOM BUTTON CSS */
+        .boom-container {
+            position: relative;
+            width: 100%;
+            height: 65px;
+            margin-top: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #e4e4e7;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s;
+        }
+        .boom-container:active { transform: scale(0.96); }
+        .boom-progress {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #32CD32);
+            transition: width 0.1s linear;
+        }
+        .boom-text {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-main);
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+        .shake-animation { animation: boomShake 0.3s infinite; }
+        @keyframes boomShake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-2px, -1px) rotate(-1deg); }
+            40% { transform: translate(1px, 2px) rotate(1deg); }
+            60% { transform: translate(-1px, 1px) rotate(0deg); }
+            80% { transform: translate(2px, -2px) rotate(-1deg); }
+            100% { transform: translate(1px, -1px) rotate(1deg); }
+        }
+        /* END BOOM BUTTON CSS */
+
+        .quick-amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+        .amt-btn { background: #f4f4f5; color: var(--text-main); border: 1px solid #e4e4e7; border-radius: 8px; padding: 12px 5px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.3s; text-align: center; }
+        .amt-btn:hover, .amt-btn:active { background: var(--primary-color); color: var(--text-main); border-color: var(--primary-dark); }
+
+        /* --- አዲሱ የፓኬጅ (Bike) መታያ ዲዛይን (Modern Plan Card) --- */
+        .farm-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .modern-plan-card {
+            background: white; border-radius: 20px; overflow: hidden; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #e4e4e7;
+            position: relative; transition: transform 0.3s ease;
+        }
+        .modern-plan-card:active { transform: scale(0.98); }
+        .plan-img-container { width: 100%; height: 160px; position: relative; background: #f4f4f5; }
+        .plan-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .plan-badge { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.75); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2); }
+        .plan-badge i { color: var(--primary-color); margin-right: 5px; }
+        .plan-content { padding: 20px; }
+        .plan-title { font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 15px; text-transform: uppercase; letter-spacing: -0.5px; }
+        .plan-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+        .plan-stat-box { background: #f8fafc; border-radius: 12px; padding: 12px 10px; text-align: center; border: 1px solid #f1f5f9; }
+        .plan-stat-box .stat-label { font-size: 0.65rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        .plan-stat-box .stat-value { font-size: 0.95rem; font-weight: 800; color: var(--text-main); }
+        .plan-stat-box.highlight { background: var(--primary-light); border-color: rgba(50, 205, 50, 0.2); }
+        .plan-stat-box.highlight .stat-value { color: var(--primary-dark); }
+        .total-return-box { display: flex; justify-content: space-between; align-items: center; background: var(--text-main); color: white; padding: 12px 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .total-return-box span { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #a1a1aa; }
+        .total-return-box strong { font-size: 1.1rem; font-weight: 800; color: var(--primary-color); }
+        .btn-buy-modern { width: 100%; background: var(--primary-color); color: white; border: none; padding: 16px; border-radius: 14px; font-size: 1rem; font-weight: 800; text-transform: uppercase; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 8px 15px rgba(50, 205, 50, 0.3); transition: 0.3s; }
+        .btn-buy-modern:disabled { background: #e4e4e7; color: #a1a1aa; box-shadow: none; cursor: not-allowed; }
+        .btn-buy-modern:not(:disabled):active { transform: translateY(2px); box-shadow: 0 4px 10px rgba(50, 205, 50, 0.2); }
+        /* --- መጨረሻ --- */
+
+        .harvest-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border-left: 6px solid var(--primary-color); box-shadow: var(--shadow-soft); }
+        .harvest-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f4f4f5; padding-bottom: 10px; margin-bottom: 10px; }
+        .btn-collect { background: var(--text-main); color: var(--primary-color); padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; width: 100%; margin-top: 10px; cursor: pointer; text-transform: uppercase; }
+        .btn-collect:disabled { background: #f4f4f5; color: #a1a1aa; }
+
+        .bank-box { background: #18181b; color: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; position: relative; overflow: hidden; border-bottom: 4px solid var(--primary-color); }
+        
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: white; border-top: 1px solid #f4f4f5;
+            padding: 10px 0; display: flex; justify-content: space-around; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #a1a1aa; font-size: 0.7rem; font-weight: 700; cursor: pointer; transition: 0.3s; width: 60px; text-transform: uppercase; }
+        .nav-item i { font-size: 1.4rem; margin-bottom: 4px; transition: 0.3s; }
+        .nav-item.active { color: var(--text-main); }
+        .nav-item.active i { color: var(--primary-color); transform: translateY(-3px); }
+
+        .center-prominent { position: relative; transform: translateY(-20px); z-index: 1001; }
+        .prominent-bg { background: var(--primary-color); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 15px rgba(50, 205, 50, 0.4); border: 4px solid white; margin-bottom: 5px; transition: 0.3s; }
+        .center-prominent i { color: white !important; font-size: 1.6rem !important; margin-bottom: 0 !important; transform: none !important; }
+        .center-prominent.active .prominent-bg { transform: scale(1.1); box-shadow: 0 10px 20px rgba(50, 205, 50, 0.6); }
+
+        .mini-prominent { position: relative; transform: translateY(-10px); z-index: 1000; }
+        .mini-prominent-bg { background: #e4e4e7; width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 3px solid white; margin-bottom: 5px; transition: 0.3s; }
+        .mini-prominent i { color: #a1a1aa !important; font-size: 1.2rem !important; margin-bottom: 0 !important; transform: none !important; transition: 0.3s; }
+        .mini-prominent.active .mini-prominent-bg { background: var(--primary-color); box-shadow: 0 8px 15px rgba(50, 205, 50, 0.4); transform: scale(1.1); }
+        .mini-prominent.active i { color: white !important; }
+
+        .floating-cs-btn {
+            position: fixed; bottom: 80px; right: 20px; background: var(--text-main); color: var(--primary-color);
+            width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); cursor: pointer; z-index: 1500; transition: 0.3s;
+        }
+
+        .modal { display: none; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 2000; }
+        .modal-content { background: white; width: 90%; max-width: 420px; padding: 30px; border-radius: 20px; text-align: center; position: relative; }
+        .close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #a1a1aa; cursor: pointer; }
+
+        #authModal { 
+            background-color: #ffffff; 
+            background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='dots' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='2' cy='2' r='1.5' fill='%23e4e4e7'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23dots)'/%3E%3C/svg%3E");
+            display: flex; align-items: center; justify-content: center; 
+        }
+        #authModal .modal-content { position: relative; width: 100%; max-width: 400px; height: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; background: transparent; padding: 40px 20px; color: var(--text-main); box-shadow: none; }
+        #loginForm, #signupForm { width: 100%; max-width: 400px; text-align: center; }
+
+        #authModal .top-logo { font-size: 2.5rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        #authModal .top-logo i { color: var(--primary-color); }
+        #authModal h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 35px; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .auth-input-group { background: #f4f4f5; border-radius: 30px; display: flex; align-items: center; padding: 5px 20px; margin-bottom: 15px; border: 1px solid #e4e4e7; transition: 0.3s; }
+        .auth-input-group:focus-within { border-color: var(--primary-color); background: white; }
+        .auth-input-group i { color: #a1a1aa; margin-right: 12px; font-size: 1.1rem; }
+        .auth-input-group input { background: transparent; border: none; padding: 15px 0; width: 100%; outline: none; color: var(--text-main); font-weight: 600; font-size: 0.95rem; }
+        .auth-input-group span { font-weight: bold; color: var(--text-main); margin-right: 12px; padding-right: 12px; border-right: 1px solid #d4d4d8; font-size: 0.95rem; }
+
+        #authModal .btn-full { background: var(--text-main); color: white; border-radius: 30px; margin-top: 15px; font-size: 1.1rem; padding: 18px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        .admin-box { background: white; border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid #eee; border-left: 4px solid var(--text-main); }
+        .req-card { border-left: 4px solid #f59e0b; padding: 15px; background: #fffbeb; border-radius: 10px; margin-bottom: 10px; }
+        .req-card.withdraw { border-left-color: #3b82f6; background: #eff6ff; }
+
+        #toast { visibility: hidden; background: var(--text-main); color: var(--primary-color); text-align: center; padding: 15px 25px; border-radius: 8px; position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 3000; font-weight: 700; text-transform: uppercase; font-size: 0.8rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        #toast.show { visibility: visible; animation: popIn 0.3s, fadeOut 0.5s 2.5s forwards; }
+        @keyframes popIn { from { bottom: 80px; opacity: 0; } to { bottom: 100px; opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; } }
+
+        .slideshow-container { position: relative; margin: 0 20px 25px; border-radius: 16px; overflow: hidden; height: 180px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+        .mySlides { display: none; height: 100%; }
+        .mySlides img { width: 100%; height: 100%; object-fit: cover; }
+        .fade { animation-name: slideFade; animation-duration: 2.5s; }
+        @keyframes slideFade { from {opacity: .2} to {opacity: 1} }
+        
+        .dot { height: 8px; width: 8px; margin: 0 4px; background-color: rgba(255,255,255,0.5); border-radius: 50%; display: inline-block; transition: background-color 0.6s ease; }
+        .dot.active { background-color: var(--primary-color); width: 16px; border-radius: 4px; }
+
+        /* --- Modern Transaction History Styles --- */
+        .txn-tabs-container {
+            background: #f4f4f5;
+            border-radius: 14px;
+            padding: 5px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        .txn-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .txn-tab.active {
+            background: white;
+            color: var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .txn-card {
+            background: white;
+            border: 1px solid #f4f4f5;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+        .txn-card:active { transform: scale(0.98); }
+        .txn-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        .txn-info { flex: 1; }
+        .txn-title { font-weight: 800; color: var(--text-main); font-size: 0.95rem; margin-bottom: 3px; }
+        .txn-date { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .txn-amount-box { text-align: right; }
+        .txn-amount { font-weight: 800; font-size: 1.05rem; }
+        .txn-status { font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-transform: uppercase; margin-top: 5px; display: inline-block; }
+
+        /* --- Modern Self-Driving Bike Loader --- */
+        .bike-loader-container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; width: 100%;
+        }
+        .bike-wrapper {
+            position: relative; width: 80px; height: 50px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .bike-icon {
+            font-size: 2.5rem; color: var(--primary-color); position: absolute; z-index: 2;
+            animation: driveBikeBounce 0.8s infinite alternate ease-in-out;
+        }
+        .wind-line {
+            position: absolute; height: 3px; background: #e4e4e7; border-radius: 3px; z-index: 1;
+            animation: windBlowFast 1s infinite linear;
+        }
+        .wind-1 { top: 15px; right: -20px; width: 40px; animation-delay: 0s; }
+        .wind-2 { top: 35px; right: -20px; width: 25px; animation-delay: 0.4s; }
+        .wind-3 { top: 25px; right: -20px; width: 50px; animation-delay: 0.2s; }
+        .loading-text-modern {
+            margin-top: 15px; font-size: 0.75rem; font-weight: 800; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 2px; animation: pulseText 1.5s infinite ease-in-out;
+        }
+        @keyframes driveBikeBounce {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-4px) rotate(-2deg); }
+        }
+        @keyframes windBlowFast {
+            0% { transform: translateX(20px); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(-100px); opacity: 0; }
+        }
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="authModal" class="modal" style="display:flex;">
+        <div class="modal-content animate-up">
+            <div class="top-logo"><i class="fa-solid fa-bicycle"></i> LIME</div>
+            
+            <div style="width: 100%; height: 160px; border-radius: 0; overflow: hidden; margin-bottom: 20px; margin-top: 15px; box-shadow: var(--shadow-soft); position: relative;">
+                <img src="https://img.li.me/content/uploads/G4-bike-with-HL.png?auto=compress&crop=focalpoint&fit=crop&fp-x=0.5&fp-y=0.5&h=800&q=80&w=800&s=eea1a571b8a17da6cbee20f99082dee2" alt="Login Banner" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); display: flex; align-items: flex-end; padding: 15px;">
+                    <span style="color: white; font-size: 1.1rem; font-weight: 800; text-transform: uppercase;"><i class="fa-solid fa-right-to-bracket" style="color: var(--primary-color);"></i> Get Started</span>
+                </div>
+            </div>
+
+            <h2 id="authTitle">WELCOME TO LIME</h2>
+            
+            <div id="loginForm">
+                <div class="auth-input-group">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span>+251</span>
+                    <input type="tel" id="loginPhone" placeholder="Phone Number" maxlength="9">
+                </div>
+                <div class="auth-input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPass" placeholder="Login Password">
+                </div>
+                <button class="btn-full" onclick="login()">Login</button>
+                <p style="margin-top:20px; font-size:0.95rem; color:var(--text-muted); font-weight:600;">
+                    No account? <a href="#" onclick="toggleAuth('signup')" style="color:var(--primary-dark); font-weight:800; text-decoration:none;">Register Now</a>
+                </p>
+            </div>
+
+            <div id="signupForm" style="display:none;">
+                
+                <div class="auth-input-group">
+                    <i class="fa-solid fa-mobile-screen"></i>
+                    <span>+251</span>
+                    <input type="tel" id="regPhone" placeholder="Phone Number" maxlength="9">
+                </div>
+                
+                <div class="auth-input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regPass" placeholder="Create Password">
+                </div>
+                <div class="auth-input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="regPassConfirm" placeholder="Confirm Password">
+                </div>
+                
+                <div class="auth-input-group">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <input type="text" id="regRef" placeholder="Invite Code (Optional)">
+                </div>
+
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button onclick="toggleAuth('login')" style="background: #f4f4f5; border: 1px solid #e4e4e7; color: var(--text-muted); width: 55px; height: 55px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; margin-top: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);" title="Back to Login">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button class="btn-full" onclick="signup()" style="flex: 1;">Register Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="claimSuccessModal" class="modal">
+        <div class="modal-content animate-up">
+            <i class="fa-solid fa-money-bill-trend-up" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 15px;" id="claimModalIcon"></i>
+            <h2 style="color:var(--text-main); font-weight:800; text-transform: uppercase;" id="claimModalTitle">Revenue Added!</h2>
+            <p id="claimModalDesc" style="color:var(--text-muted); margin: 10px 0; font-weight:600;">Your daily ride revenue is ready.</p>
+            <div style="font-size: 3rem; font-weight: 800; color: var(--text-main); margin: 15px 0;">ETB <span id="claimModalAmount">0.00</span></div>
+            <button class="btn-full" onclick="closeModal('claimSuccessModal')">Awesome!</button>
+        </div>
+    </div>
+
+    <div id="app" style="display:none;">
+        
+        <header>
+            <div class="logo"><i class="fa-solid fa-bicycle"></i> LIME</div>
+            <div class="top-balance" onclick="switchView('profile')">
+                <i class="fa-solid fa-wallet"></i> 
+                <span>ETB <span id="topBarBalance">0.00</span></span>
+            </div>
+        </header>
+
+        <section id="view-home" class="view-section active-view animate-up">
+            <div style="display: none;">
+                <span id="displayBalance">0.00</span>
+                <span id="displayIncome">0.00</span>
+            </div>
+
+            <div class="slideshow-container">
+                <div class="mySlides fade">
+                    <img src="https://tse1.mm.bing.net/th/id/OIP.s556Ihpzb9L917IH1RiNUwHaE7?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Bike 1">
+                </div>
+                <div class="mySlides fade">
+                    <img src="https://img.li.me/content/uploads/image6_2024-07-29-202935_gqus.png?auto=compress&crop=focalpoint&fit=crop&fp-x=0.5&fp-y=0.5&q=80&w=820&s=18f1b33f359f023ca9b7ef607394681a" alt="Bike 2">
+                </div>
+                <div class="mySlides fade">
+                    <img src="https://www.vmcdn.ca/f/files/nsnews/images/sponsored-content-images/limebike2.png;w=960" alt="Bike 3">
+                </div>
+                <div class="mySlides fade">
+                    <img src="https://techcrunch.com/wp-content/uploads/2017/03/imageuploadedfromios.jpg?w=1000" alt="Bike 4">
+                </div>
+                <div class="mySlides fade">
+                    <img src="https://electrek.co/wp-content/uploads/sites/3/2025/04/Lime-micromobility-2.jpg?resize=350" alt="Bike 5">
+                </div>
+                <div class="mySlides fade">
+                    <img src="https://media.wired.com/photos/66a7f2999b53f001f84255f3/master/w_2560%2Cc_limit/Lime-EBike-P1050213-Gear.jpg" alt="Bike 6">
+                </div>
+                <div style="text-align:center; position: absolute; bottom: 10px; width: 100%; z-index: 10;">
+                  <span class="dot"></span> 
+                  <span class="dot"></span> 
+                  <span class="dot"></span> 
+                  <span class="dot"></span> 
+                  <span class="dot"></span> 
+                  <span class="dot"></span> 
+                </div>
+            </div>
+
+            <div class="quick-actions" style="justify-content: center; column-gap: 5%;">
+                <div class="action-circle" style="width: 28%;" onclick="switchView('deposit')">
+                    <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-circle-arrow-down"></i></div>
+                    <span data-lang="deposit">Deposit</span>
+                </div>
+                <div class="action-circle" style="width: 28%;" onclick="switchView('withdraw')">
+                    <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-circle-arrow-up"></i></div>
+                    <span data-lang="withdraw">Withdraw</span>
+                </div>
+                <div class="action-circle" style="width: 28%;" onclick="switchView('gift')">
+                    <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-gift"></i></div>
+                    <span data-lang="gift">Gift</span>
+                </div>
+                
+                <div style="flex-basis: 100%; height: 0;"></div>
+                
+                <div class="action-circle" style="width: 28%;" onclick="switchView('reward')">
+                    <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-bomb"></i></div>
+                    <span data-lang="reward">Reward</span>
+                </div>
+                <div class="action-circle" style="width: 28%;" onclick="switchView('checkin')">
+                    <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-calendar-check"></i></div>
+                    <span data-lang="service">Check In</span>
+                </div>
+
+                <div style="flex-basis: 100%; height: 0;"></div>
+
+                <div class="action-circle" style="width: 28%;" onclick="switchView('orders')">
+                    <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-motorcycle"></i></div>
+                    <span data-lang="navShop">Bikes</span>
+                </div>
+            </div>
+
+            <div style="padding: 0 20px 20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:var(--text-main); font-weight:800; font-size:1.1rem; text-transform:uppercase;" data-lang="navShop">E-Bike Fleet</h3>
+                </div>
+                <div class="farm-grid" id="homePlanList">
+                    <div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-info" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>About LimeBikes</h2>
+                <p>Learn about electric mobility.</p>
+            </div>
+            <div class="content-box">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <i class="fa-solid fa-bolt" style="font-size: 3rem; color: var(--primary-color); background: var(--text-main); padding: 20px 25px; border-radius: 20px;"></i>
+                </div>
+                <div style="background: #fff; padding: 25px 20px; border-radius: 16px; border: 1px solid #eee; line-height: 1.8;">
+                    <h3 style="color: var(--text-main); margin-bottom: 15px; font-weight: 800; font-size: 1.2rem; text-align: center;">Welcome to LimeBikes Investment!</h3>
+                    
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">
+                        <strong>LimeBikes</strong> is a modern electric bike (E-Bike) rental investment platform! Our goal is to modernize urban transportation and create mutual benefits.
+                    </p>
+                    
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                        <strong style="font-size: 1rem; color: var(--text-main);">Why Choose Us?</strong><br>
+                        <i class="fa-solid fa-check" style="color: var(--primary-color); margin-right: 5px;"></i> <b>Daily Income:</b> You earn daily profits when the bike you purchase is rented out.<br>
+                        <i class="fa-solid fa-check" style="color: var(--primary-color); margin-right: 5px;"></i> <b>Easy to Use:</b> Our platform is transparent and fast.<br>
+                        <i class="fa-solid fa-check" style="color: var(--primary-color); margin-right: 5px;"></i> <b>Fast Payouts:</b> You can withdraw your earned profits directly to your bank immediately.<br>
+                        <i class="fa-solid fa-check" style="color: var(--primary-color); margin-right: 5px;"></i> <b>Bonus System:</b> Earn extra commissions and rewards when you invite your friends.
+                    </p>
+
+                    <div style="background: var(--text-main); padding: 15px; border-radius: 12px; text-align: center; margin-top: 20px;">
+                        <p style="font-size: 0.9rem; font-weight: bold; color: var(--primary-color); margin: 0;">
+                            Invest now and grow with us!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-service" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Customer Service</h2>
+                <p>24/7 Support Team</p>
+            </div>
+            <div class="content-box" style="text-align: center;">
+                <i class="fa-solid fa-headset" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color:var(--text-main); font-weight:800; margin-bottom:15px; font-size: 1.2rem;">How can we help you?</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:25px; line-height:1.6; font-weight:600;">If you have any questions regarding deposits, withdrawals, or your e-bike investments, our dedicated support team is ready to assist you anytime.</p>
+                
+                <a href="https://t.me/Isabella67980" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; margin-bottom: 15px;">
+                    <i class="fa-brands fa-telegram" style="font-size:1.5rem;"></i> Contact Support
+                </a>
+                <a href="https://t.me/your_telegram_group" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #0088cc; color: white; margin-bottom: 15px; box-shadow: 0 8px 15px rgba(0, 136, 204, 0.3);">
+                    <i class="fa-brands fa-telegram" style="font-size:1.5rem;"></i> Telegram Group
+                </a>
+                <a href="https://chat.whatsapp.com/BgT52OtLMVbGHXE17t2hAT?mode=gi_t" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #25D366; color: white; margin-bottom: 15px; box-shadow: 0 8px 15px rgba(37, 211, 102, 0.3);">
+                    <i class="fa-brands fa-whatsapp" style="font-size:1.5rem;"></i> WhatsApp Group
+                </a>
+                <a href="https://tiktok.com/@your_profile" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #000000; color: white; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);">
+                    <i class="fa-brands fa-tiktok" style="font-size:1.5rem;"></i> Follow TikTok
+                </a>
+            </div>
+        </section>
+
+        <section id="view-team" class="view-section animate-up">
+            <div class="page-header">
+                <h2>My Team</h2>
+                <p>Build your fleet & earn commissions.</p>
+            </div>
+            <div class="content-box">
+                <div style="width: 100%; height: 160px; border-radius: 16px; overflow: hidden; margin-bottom: 25px; box-shadow: var(--shadow-soft); position: relative;">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80" alt="Team" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); display: flex; align-items: flex-end; padding: 15px;">
+                        <span style="color: white; font-size: 1.1rem; font-weight: 800; text-transform: uppercase;"><i class="fa-solid fa-people-group" style="color: var(--primary-color);"></i> Grow Your Network</span>
+                    </div>
+                </div>
+                <div style="background:#f4f4f5; border:2px dashed var(--text-muted); border-radius:16px; padding:20px; text-align:center; margin-bottom:25px;">
+                    <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Your Referral Link</div>
+                    <div id="invitePageCode" style="font-size:0.9rem; font-weight:700; color:var(--text-main); margin:10px 0; word-break: break-all;">...</div>
+                    <button class="btn-full" style="width: auto; padding: 10px 20px; font-size: 0.85rem; display: inline-block;" onclick="copyRefLink()"><i class="fa-solid fa-link"></i> Copy Link</button>
+                </div>
+
+                <div style="background:white; border:1px solid #e4e4e7; border-radius:16px; padding:20px; box-shadow:var(--shadow-soft); margin-bottom: 25px;">
+                    <h3 style="color:var(--text-main); font-size:1.1rem; font-weight:800; margin-bottom:15px; text-transform:uppercase; border-bottom: 2px solid #f4f4f5; padding-bottom:10px;">
+                        <i class="fa-solid fa-users" style="color:var(--primary-color);"></i> Team Overview
+                    </h3>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; text-align: center;">
+                        <div style="background:#f4f4f5; padding:15px; border-radius:12px;">
+                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Level 1 Team</div>
+                            <div style="font-size:1.3rem; font-weight:800; color:#ef4444; margin-top:5px;"><span id="lvl1TotalCnt">0</span> / <span id="lvl1InvestCnt">0</span></div>
+                        </div>
+                        <div style="background:#f4f4f5; padding:15px; border-radius:12px;">
+                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Level 2 Team</div>
+                            <div style="font-size:1.3rem; font-weight:800; color:#f59e0b; margin-top:5px;"><span id="lvl2TotalCnt">0</span> / <span id="lvl2InvestCnt">0</span></div>
+                        </div>
+                        <div style="background:#f4f4f5; padding:15px; border-radius:12px;">
+                            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Level 3 Team</div>
+                            <div style="font-size:1.3rem; font-weight:800; color:#32CD32; margin-top:5px;"><span id="lvl3TotalCnt">0</span> / <span id="lvl3InvestCnt">0</span></div>
+                        </div>
+                    </div>
+                    <div style="background:var(--primary-light); padding:15px; border-radius:12px; margin-top: 10px; border: 1px solid var(--primary-color); text-align: center;">
+                        <div style="font-size:0.85rem; color:var(--primary-dark); font-weight:800; text-transform:uppercase;">Total Team Size (Total / Active)</div>
+                        <div style="font-size:1.5rem; font-weight:800; color:var(--text-main); margin-top:5px;"><span id="teamTotalCnt">0</span> / <span id="teamInvestCnt">0</span></div>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 2px solid #f4f4f5; padding-top: 15px;">
+                        <h4 style="font-size:0.95rem; color:var(--text-main); font-weight:800; margin-bottom:15px; text-transform:uppercase;"><i class="fa-solid fa-list-ul" style="color:var(--primary-color);"></i> Team Members List</h4>
+                        <div id="teamMembersList" style="max-height: 250px; overflow-y: auto; background: #fafafa; border: 1px solid #e4e4e7; border-radius: 12px; padding: 5px;">
+                            <div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div>
+                        </div>
+                    </div>
+                    </div>
+
+                <div style="background:white; border:1px solid #e4e4e7; border-radius:16px; padding:20px; box-shadow:var(--shadow-soft);">
+                    <h3 style="color:var(--text-main); font-size:1.1rem; font-weight:800; margin-bottom:15px; text-transform:uppercase; border-bottom: 2px solid #f4f4f5; padding-bottom:10px;">
+                        <i class="fa-solid fa-sitemap" style="color:var(--primary-color);"></i> Commission Plan
+                    </h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <h4 style="font-size:0.9rem; color:var(--primary-dark); font-weight:700; margin-bottom:8px;">Investment Commission (One-Time)</h4>
+                        <p style="font-size:0.8rem; color:var(--text-muted); font-weight:600; line-height:1.5;">When your team members buy their FIRST bike, you earn instantly:</p>
+                        <ul style="list-style-type:none; padding-left:0; margin-top:8px; font-size:0.85rem; font-weight:700; color:var(--text-main);">
+                            <li style="margin-bottom:5px;"><span style="display:inline-block; width:60px; color:var(--text-muted);">Level 1:</span> <span style="color:#ef4444;">20%</span></li>
+                            <li style="margin-bottom:5px;"><span style="display:inline-block; width:60px; color:var(--text-muted);">Level 2:</span> <span style="color:#f59e0b;">5%</span></li>
+                            <li style="margin-bottom:5px;"><span style="display:inline-block; width:60px; color:var(--text-muted);">Level 3:</span> <span style="color:#32CD32;">2%</span></li>
+                        </ul>
+                    </div>
+
+                </div>
+                </div>
+        </section>
+
+        <section id="view-reward" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Invite Rewards</h2>
+                <p>Explode active referrals for cash!</p>
+            </div>
+            <div class="content-box">
+                <div style="text-align:center; padding: 20px 10px;">
+                    <i class="fa-solid fa-bomb" style="font-size: 5rem; color: #ef4444; margin-bottom: 20px;"></i>
+                    
+                    <div style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 15px; text-transform: uppercase;">
+                        Unclaimed Rewards: <span id="rewardCountDisplay" style="background:var(--primary-color); color:var(--text-main); padding: 5px 15px; border-radius:8px; font-size: 1.5rem; margin-left: 10px;">0</span>
+                    </div>
+                    
+                    <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-bottom: 30px;">
+                        Get 1 Reward (20 ETB) every time a friend you invite buys their first bike!
+                    </p>
+
+                    <div class="boom-container" id="boomBtn" 
+                         onmousedown="startBoom(event)" 
+                         onmouseup="stopBoom()" 
+                         onmouseleave="stopBoom()" 
+                         ontouchstart="startBoom(event)" 
+                         ontouchend="stopBoom()" 
+                         ontouchcancel="stopBoom()">
+                        <div class="boom-progress" id="boomProgress"></div>
+                        <div class="boom-text" id="boomText">Hold to BOOM (5s)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-gift" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Promo Code</h2>
+                <p>Redeem your special code here.</p>
+            </div>
+            <div class="content-box">
+                <div style="text-align:center; margin-bottom:25px;">
+                    <i class="fa-solid fa-ticket" style="font-size: 4rem; color: var(--text-main); margin-bottom: 15px;"></i>
+                </div>
+                <div class="input-group">
+                    <label>Gift Code</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="giftCodeInput" placeholder="Enter code" style="text-transform:uppercase; flex: 1;">
+                        <button onclick="navigator.clipboard.readText().then(t => document.getElementById('giftCodeInput').value = t).catch(e => showToast('Paste manually'))" style="background: var(--text-main); color: var(--primary-color); border: none; padding: 0 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-size: 1.2rem;"><i class="fa-solid fa-paste"></i></button>
+                    </div>
+                </div>
+                <button class="btn-full" onclick="redeemGiftCode()">Claim Reward</button>
+            </div>
+        </section>
+
+        <section id="view-checkin" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Daily Check In</h2>
+                <p>Earn 3 ETB every day!</p>
+            </div>
+            <div class="content-box" style="text-align: center;">
+                <i class="fa-solid fa-calendar-days" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                <h3 style="color:var(--text-main); font-weight:800; margin-bottom:10px; font-size: 1.1rem; text-transform: uppercase;">Weekly Progress</h3>
+                <div id="checkInDaysGrid" style="margin-bottom: 30px;">
+                    </div>
+                <button class="btn-full" onclick="doCheckIn()" style="display:flex; justify-content:center; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-check-circle"></i> Check In Now
+                </button>
+            </div>
+        </section>
+
+        <section id="view-deposit" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Deposit</h2>
+                <p>Fund your Lime account.</p>
+            </div>
+            <div class="content-box">
+                <div id="depositStep1">
+                    <h4 style="margin-bottom:15px; color:var(--text-main); text-transform:uppercase;">Step 1: Amount</h4>
+                    
+                    <div class="input-group" style="margin-top:20px; margin-bottom: 10px;">
+                        <label>Amount to Send (Min: 1100 ETB)</label>
+                        <input type="number" id="depAmountPage" placeholder="Enter Amount">
+                    </div>
+
+                    <div class="quick-amounts">
+                        <button class="amt-btn" onclick="setDepositAmount(1100)">1100</button>
+                        <button class="amt-btn" onclick="setDepositAmount(4000)">4000</button>
+                        <button class="amt-btn" onclick="setDepositAmount(8000)">8000</button>
+                        <button class="amt-btn" onclick="setDepositAmount(12000)">12000</button>
+                        <button class="amt-btn" onclick="setDepositAmount(25000)">25000</button>
+                        <button class="amt-btn" onclick="setDepositAmount(40000)">40000</button>
+                        <button class="amt-btn" onclick="setDepositAmount(90000)">90000</button>
+                        <button class="amt-btn" onclick="setDepositAmount(150000)">150000</button>
+                    </div>
+
+                    <button class="btn-full" onclick="goToDepositStep(2)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+
+                <div id="depositStep2" style="display:none;">
+                    <h4 style="margin-bottom:15px; color:var(--text-main); text-transform:uppercase;">Step 2: Transfer</h4>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px; font-weight:600;">Please transfer the exact amount to one of the accounts below.</p>
+                    
+                    <div id="allBankCardsContainer">
+                        <div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div>
+                    </div>
+                    
+                    <button class="btn-full" style="margin-top: 20px;" onclick="goToDepositStep(3)">I Have Paid <i class="fa-solid fa-arrow-right"></i></button>
+                    <button style="width:100%; background:none; border:none; color:var(--text-muted); font-weight:bold; margin-top:15px; cursor:pointer; text-transform:uppercase;" onclick="goToDepositStep(1)">Back</button>
+                </div>
+
+                <div id="depositStep3" style="display:none;">
+                    <h4 style="margin-bottom:15px; color:var(--text-main); text-transform:uppercase;">Step 3: Verification</h4>
+                    <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:15px; font-weight:600;">Enter the Transaction ID (Reference Number) from your payment receipt.</p>
+                    
+                    <div class="input-group" style="margin-top: 20px;">
+                        <label>Transaction Ref / ID</label>
+                        <input type="text" id="depTransIdPage" placeholder="Enter reference code">
+                    </div>
+                    
+                    <button class="btn-full" style="margin-top: 20px;" onclick="submitDepositFromPage()">Confirm Payment</button>
+                    <button style="width:100%; background:none; border:none; color:var(--text-muted); font-weight:bold; margin-top:15px; cursor:pointer; text-transform:uppercase;" onclick="goToDepositStep(2)">Back</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-withdraw" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Withdraw</h2>
+                <p>Cash out your revenue.</p>
+            </div>
+            <div class="content-box">
+                <div style="text-align:center; margin-bottom:25px;">
+                    <p style="color:var(--text-muted); font-size:0.8rem; font-weight:700; text-transform:uppercase;">Available Balance</p>
+                    <h2 style="font-size:2.5rem; color:var(--text-main); font-weight:800;">ETB <span id="withDisplayBal">0.00</span></h2>
+                </div>
+
+                <div id="withdrawInputs">
+                    <div class="input-group">
+                        <label>Withdrawal Amount</label>
+                        <input type="number" id="withAmount" placeholder="Enter amount (Min 300)">
+                    </div>
+                    <div style="font-size:0.75rem; color:#ef4444; margin-top:-5px; margin-bottom:15px; font-weight:bold;">* A 16% withdrawal fee will be deducted.</div>
+                    
+                    <div class="input-group">
+                        <label>Security Password</label>
+                        <input type="password" id="withAuthPass" placeholder="Enter withdrawal password">
+                    </div>
+                    <button class="btn-full" onclick="submitWithdraw()">Submit Request</button>
+                </div>
+
+                <div id="withdrawMsg" style="display:none; text-align:center;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size:3rem; color:#ef4444; margin-bottom:15px;"></i>
+                    <p style="color:var(--text-main); font-weight:700;">Please bind your bank account first!</p>
+                    <button class="btn-full" style="margin-top:15px;" onclick="switchView('bankcard')">Setup Bank Info</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-orders" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>My Bikes</h2>
+                <p>Track your active e-bikes.</p>
+            </div>
+            <div class="content-box">
+                <div style="background: linear-gradient(135deg, #e0f2fe, #bae6fd); border-left: 4px solid #0ea5e9; color: #0369a1; padding: 15px; border-radius: 12px; font-size: 0.85rem; font-weight: 700; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.1);">
+                    <i class="fa-solid fa-robot" style="font-size: 1.5rem;"></i>
+                    <div style="line-height: 1.4;">it will be added in to your balance automatically! (Auto-Credited)</div>
+                </div>
+                <div id="myOrdersList">
+                    <div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-profile" class="view-section animate-up">
+            <div class="page-header" style="padding-bottom: 20px;">
+                <h2 style="margin-bottom: 15px;">My Profile</h2>
+                
+                <div style="width: 100%; height: 160px; border-radius: 16px; overflow: hidden; margin-bottom: 25px; box-shadow: var(--shadow-soft); position: relative;">
+                    <img src="https://tse2.mm.bing.net/th/id/OIP.a-tLzU2vqBOxCsL75u80nQHaEZ?rs=1&pid=ImgDetMain&o=7&rm=3" alt="Profile Banner" style="width: 100%; height: 100%; object-fit: cover;">
+                    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0,0,0,0.6), transparent); display: flex; align-items: flex-end; padding: 15px;">
+                        <span style="color: white; font-size: 1.1rem; font-weight: 800; text-transform: uppercase;"><i class="fa-solid fa-user" style="color: var(--primary-color);"></i> My Account</span>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align: left;">
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-wallet" style="color:var(--primary-color);"></i> Balance</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profBalance">0.00</span></div>
+                    </div>
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-chart-line" style="color:var(--accent-green);"></i> Daily</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profDailyIncome">0.00</span></div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align: left; margin-top: 10px;">
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-users-viewfinder" style="color:var(--text-main);"></i> Team reward</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTeamComm2">0.00</span></div>
+                    </div>
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-download" style="color:#0ea5e9;"></i> Total Recharge</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTotalRecharge">0.00</span></div>
+                    </div>
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-upload" style="color:#ef4444;"></i> Total Withdraw</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTotalWithdraw">0.00</span></div>
+                    </div>
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-sack-dollar" style="color:#f59e0b;"></i> Total Profit</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTotalProfit">0.00</span></div>
+                    </div>
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-calendar-week" style="color:#8b5cf6;"></i> Week Profit</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profWeekProfit">0.00</span></div>
+                    </div>
+                    <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
+                        <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-coins" style="color:var(--primary-color);"></i> Today Profit</div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTodayProfit">0.00</span></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="content-box" style="margin-top: 20px;">
+                <h4 style="margin-bottom:15px; color:var(--text-main); text-transform:uppercase; font-size:0.9rem;"><i class="fa-solid fa-gear"></i> Menu</h4>
+                
+                <div class="quick-actions" style="margin-top: 15px;">
+                    <div class="action-circle" onclick="switchView('orders')">
+                        <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-motorcycle"></i></div>
+                        <span>My Bikes</span>
+                    </div>
+                    <div class="action-circle" onclick="switchView('transactions')">
+                        <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-receipt"></i></div>
+                        <span>History</span>
+                    </div>
+                    <div class="action-circle" onclick="switchView('bankcard')">
+                        <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-building-columns"></i></div>
+                        <span>Bank Info</span>
+                    </div>
+                    <div class="action-circle" onclick="switchView('info')">
+                        <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-circle-info"></i></div>
+                        <span>About</span>
+                    </div>
+                    <a class="action-circle" href="Lime.apk" download style="text-decoration: none;">
+                        <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-brands fa-android"></i></div>
+                        <span>App</span>
+                    </a>
+                    <div class="action-circle" onclick="switchView('changepass')">
+                        <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-lock"></i></div>
+                        <span>Security</span>
+                    </div>
+                    <div class="action-circle" onclick="window.location.reload()">
+                        <div class="icon-box" style="background: var(--primary-color); color: white;"><i class="fa-solid fa-power-off"></i></div>
+                        <span>Log Out</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-changepass" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('profile')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Security</h2>
+            </div>
+            <div class="content-box">
+                <div class="input-group">
+                    <label>Current Password</label>
+                    <input type="password" id="cpOldPass">
+                </div>
+                <div class="input-group">
+                    <label>New Password</label>
+                    <input type="password" id="cpNewPass">
+                </div>
+                <button class="btn-full" onclick="changeAccountPassword()">Update</button>
+            </div>
+        </section>
+
+        <section id="view-transactions" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('profile')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>History</h2>
+                <p>Track your financial activities.</p>
+            </div>
+            <div class="content-box">
+                <div class="txn-tabs-container">
+                    <div id="tab-dep" class="txn-tab active" onclick="showTxnTab('dep')">Deposit</div>
+                    <div id="tab-wit" class="txn-tab" onclick="showTxnTab('wit')">Withdraw</div>
+                    <div id="tab-inc" class="txn-tab" onclick="showTxnTab('inc')">Income</div>
+                </div>
+                <div id="txn-dep-list"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
+                <div id="txn-wit-list" style="display:none;"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
+                <div id="txn-inc-list" style="display:none;"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
+            </div>
+        </section>
+
+        <section id="view-bankcard" class="view-section animate-up">
+            <div class="page-header">
+                <button class="back-btn" onclick="switchView('profile')"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2>Bank Details</h2>
+            </div>
+            <div class="content-box">
+                <div class="input-group">
+                    <label>Bank Name</label>
+                    <input type="text" id="bindBankName" placeholder="CBE, Telebirr, etc">
+                </div>
+                <div class="input-group">
+                    <label>Account Holder</label>
+                    <input type="text" id="bindAccName">
+                </div>
+                <div class="input-group">
+                    <label>Account Number</label>
+                    <input type="number" id="bindAccNum">
+                </div>
+                <div class="input-group" style="margin-top:25px;">
+                    <label>Withdrawal Password</label>
+                    <input type="password" id="bindWithPass">
+                </div>
+                
+                <div class="input-group" style="margin-top:15px;">
+                    <label>Verification Code</label>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                        <canvas id="captchaCanvas" width="150" height="50" style="background: #e4e4e7; border-radius: 8px; cursor: pointer; letter-spacing: 5px;" onclick="generateCaptcha()"></canvas>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); cursor: pointer;" onclick="generateCaptcha()"><i class="fa-solid fa-rotate-right"></i> Refresh</span>
+                    </div>
+                    <input type="text" id="bindVerCode" style="text-transform:uppercase;" placeholder="Enter the letters/numbers above">
+                </div>
+                
+                <button class="btn-full" onclick="saveBankInfo()">Save</button>
+            </div>
+        </section>
+
+        <section id="view-admin" class="view-section animate-up">
+            <div class="page-header">
+                <h2>Admin Panel</h2>
+            </div>
+            <div class="content-box">
+                
+                <div class="admin-box" style="border-left-color: #32CD32; background: #f0fdf4;">
+                    <h4 style="margin-bottom:15px; color: var(--primary-dark);"><i class="fa-solid fa-money-bill-transfer"></i> Global Profit Release</h4>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">Click this to automatically distribute today's daily income to ALL active users at once.</p>
+                    <button class="btn-full" id="adminReleaseBtn" style="background:var(--primary-color); color:white; display:flex; align-items:center; justify-content:center; gap:10px; margin-top: 10px;" onclick="adminReleaseAllProfits()">
+                        <i class="fa-solid fa-paper-plane"></i> Release Daily Profits
+                    </button>
+                </div>
+
+                <div class="admin-box">
+                    <h4 style="margin-bottom:15px;"><i class="fa-solid fa-building-columns"></i> Add Deposit Bank</h4>
+                    <div class="input-group"><input type="text" id="adminDepBankName" placeholder="Bank Name (e.g. CBE, Telebirr)"></div>
+                    <div class="input-group"><input type="number" id="adminDepAccNum" placeholder="Account Number"></div>
+                    <div class="input-group"><input type="text" id="adminDepAccName" placeholder="Account Holder Name"></div>
+                    <button class="btn-full" onclick="addAdminBank()">Add Bank Account</button>
+                    <h4 style="margin:20px 0 10px;">Active Deposit Banks</h4>
+                    <div id="adminBankList" style="font-size:0.85rem;"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
+                </div>
+
+                <div class="admin-box">
+                    <h4 style="margin-bottom:15px;"><i class="fa-solid fa-gift"></i> Create Gift Code</h4>
+                    <div class="input-group"><input type="text" id="adminGiftCode" placeholder="Custom Code (Leave empty for random)" style="text-transform:uppercase;"></div>
+                    <div class="input-group"><input type="number" id="adminGiftAmount" placeholder="Reward Amount (ETB)"></div>
+                    <button class="btn-full" onclick="createGiftCode()">Generate Code</button>
+                    <h4 style="margin:20px 0 10px;">Generated Codes</h4>
+                    <div id="adminGiftList" style="font-size:0.85rem;"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
+                </div>
+
+                <div class="admin-box">
+                    <h4 id="adminPlanTitle"><i class="fa-solid fa-plus"></i> Add Bike Package</h4>
+                    <div class="input-group"><input type="text" id="adminPlanName" placeholder="Package Name (e.g. Lime E-Bike 1)"></div>
+                    <div class="input-group"><input type="number" id="adminPlanPrice" placeholder="Price (ETB)"></div>
+                    <div class="input-group"><input type="number" id="adminPlanRoi" placeholder="Daily Profit (ETB)"></div>
+                    <div class="input-group"><input type="number" id="adminPlanDuration" placeholder="Duration (Days)"></div>
+                    <div class="input-group"><input type="number" id="adminPlanLimit" placeholder="Purchase Limit"></div>
+                    
+                    <div class="input-group">
+                        <select id="adminPlanCommission">
+                            <option value="true">Commission Enabled (ኮሚሽን ያስባል)</option>
+                            <option value="false">Commission Disabled (አያስብም)</option>
+                        </select>
+                    </div>
+                    <div class="input-group"><input type="text" id="adminPlanImg" placeholder="Image URL"></div>
+                    <button class="btn-full" id="adminSavePlanBtn" onclick="saveAdminPlan()">Publish</button>
+                    <button class="btn-full" id="adminCancelEditBtn" style="display:none; background:#a1a1aa; margin-top:10px;" onclick="cancelEditPlan()">Cancel Edit</button>
+                    <h4 style="margin:20px 0 10px;">Existing Packages</h4>
+                    <div id="adminExistingPlans" style="font-size:0.85rem;"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
+                </div>
+                
+                <h4 style="margin:20px 0 10px;">Pending Transactions</h4>
+                <div id="adminRequestList"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
+                <button class="btn-full" style="background:#ef4444; color:white; margin-top:30px;" onclick="window.location.reload()">Admin Logout</button>
+            </div>
+        </section>
+
+        <div class="bottom-nav" id="bottomNav">
+            <div class="nav-item mini-prominent" onclick="switchView('info')" id="nav-info">
+                <div class="mini-prominent-bg">
+                    <i class="fa-solid fa-circle-info"></i>
+                </div>
+                <span>About</span>
+            </div>
+            <div class="nav-item mini-prominent" onclick="switchView('service')" id="nav-service">
+                <div class="mini-prominent-bg">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <span>Service</span>
+            </div>
+            
+            <div class="nav-item active center-prominent" onclick="switchView('home')" id="nav-home">
+                <div class="prominent-bg">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <span>Dashboard</span>
+            </div>
+
+            <div class="nav-item mini-prominent" onclick="switchView('team')" id="nav-team">
+                <div class="mini-prominent-bg">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <span>Team</span>
+            </div>
+            <div class="nav-item mini-prominent" onclick="switchView('profile')" id="nav-profile">
+                <div class="mini-prominent-bg">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">Notification</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAntAiYdEte29zgm5-IKmzX_uvKxy7aa1E",
+            authDomain: "limebikes.firebaseapp.com",
+            databaseURL: "https://limebikes-default-rtdb.firebaseio.com",
+            projectId: "limebikes",
+            storageBucket: "limebikes.firebasestorage.app",
+            messagingSenderId: "348176676203",
+            appId: "1:348176676203:web:e5fb198509564c87c2882e",
+            measurementId: "G-HDG3FNPHVL"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentUser = null; let userData = {}; let editingPlanKey = null; 
+        
+        const BIKE_LOADER = `<div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div>`;
+
+        const translations = {
+            en: { deposit: "Deposit", withdraw: "Withdraw", service: "Support", invite: "Team", gift: "Gift", reward: "Reward", navHome: "Home", navShop: "Bikes", navTeam: "Team", navProfile: "Profile" },
+            am: { deposit: "ገንዘብ አስገባ", withdraw: "ገን ঐতি", service: "እርዳታ", invite: "ቡድን", gift: "ስጦታ", reward: "ሽልማት", navHome: "ዋና ገጽ", navShop: "ብስክሌት", navTeam: "ቡድን", navProfile: "ፕሮፋይል" }
+        };
+        let currentLang = 'en';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                toggleAuth('signup');
+                document.getElementById('regRef').value = refCode;
+            }
+        });
+
+        let currentCaptcha = "";
+        function generateCaptcha() {
+            const canvas = document.getElementById('captchaCanvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; 
+            currentCaptcha = "";
+            for (let i = 0; i < 5; i++) {
+                currentCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            for (let i = 0; i < 50; i++) {
+                ctx.fillStyle = `rgba(${Math.random()*255},${Math.random()*255},${Math.random()*255},0.3)`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.font = "bold 24px Montserrat";
+            ctx.fillStyle = "var(--text-main)";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.translate(20 + i * 25, 25);
+                const angle = (Math.random() - 0.5) * 0.4;
+                ctx.rotate(angle);
+                ctx.fillText(currentCaptcha[i], 0, 0);
+                ctx.restore();
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(0, Math.random() * canvas.height);
+            ctx.lineTo(canvas.width, Math.random() * canvas.height);
+            ctx.strokeStyle = "var(--primary-color)";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function saveBankInfo() {
+            const bName = document.getElementById('bindBankName').value;
+            const accName = document.getElementById('bindAccName').value;
+            const accNum = document.getElementById('bindAccNum').value;
+            const wPass = document.getElementById('bindWithPass').value;
+            const userCaptcha = document.getElementById('bindVerCode').value.toUpperCase();
+
+            if(!bName || !accName || !accNum || !wPass) return showToast("Please fill all fields!");
+            if(userCaptcha !== currentCaptcha) {
+                generateCaptcha(); 
+                document.getElementById('bindVerCode').value = '';
+                return showToast("Incorrect Verification Code!");
+            }
+
+            db.ref('users/' + currentUser + '/bankInfo').set({
+                bankName: bName,
+                accName: accName,
+                accNum: accNum,
+                withdrawPass: wPass
+            }).then(() => {
+                showToast("Bank Info Saved Successfully!");
+                document.getElementById('bindVerCode').value = '';
+                generateCaptcha();
+                switchView('profile');
+            }).catch(err => {
+                showToast("Error saving bank info.");
+            });
+        }
+
+        function toggleAuth(mode) {
+            if(mode === 'signup') {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('signupForm').style.display = 'block';
+                document.getElementById('authTitle').innerText = "REGISTER NOW";
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('signupForm').style.display = 'none';
+                document.getElementById('authTitle').innerText = "WELCOME TO LIME";
+            }
+        }
+
+        function sanitizePhone(phone) { return phone.replace(/\D/g, ''); }
+
+        function login() {
+            const rawPhone = document.getElementById('loginPhone').value;
+            const pass = document.getElementById('loginPass').value;
+            if(!rawPhone || !pass) return showToast("Please fill all fields");
+
+            if (rawPhone === '44' && pass === 'a444') {
+                initApp({name: "Admin", phone: "44", isAdmin: true}, "44");
+                return showToast("Admin Access Granted");
+            }
+
+            const phone = "251" + sanitizePhone(rawPhone);
+            db.ref('users/' + phone).once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && data.password === pass) initApp(data, phone);
+                else showToast("Invalid credentials");
+            });
+        }
+
+        function signup() {
+            const rawPhone = document.getElementById('regPhone').value;
+            const pass = document.getElementById('regPass').value;
+            const passConfirm = document.getElementById('regPassConfirm').value;
+            const refCode = document.getElementById('regRef').value;
+            
+            if(!rawPhone || !pass || !passConfirm) return showToast("Fill all required fields");
+            if(pass !== passConfirm) return showToast("Passwords do not match!");
+            if (!/^[79][0-9]{8}$/.test(rawPhone)) return showToast("Phone must start with 9 or 7.");
+
+            const phone = "251" + rawPhone;
+            db.ref('users/' + phone).once('value', (snapshot) => {
+                if (snapshot.exists()) return showToast("Phone already registered");
+                
+                const autoName = "Partner_" + rawPhone.substring(5);
+                let newCode = ""; const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                for(let i=0; i<15; i++) newCode += chars.charAt(Math.floor(Math.random() * chars.length));
+                
+                const newUser = {
+                    name: autoName, phone: phone, password: pass, balance: 300, income: 0, 
+                    commission: 0, refCode: newCode, referredBy: refCode || "admin", rewards: 0, plans: {}
+                };
+                db.ref('users/' + phone).set(newUser).then(() => {
+                    initApp(newUser, phone); showToast("Account created!");
+                });
+            });
+        }
+
+        function listenForRequests() {
+            const container = document.getElementById('adminRequestList');
+            if(!container) return;
+            
+            db.ref('deposits').on('value', depSnap => {
+                db.ref('withdrawals').on('value', witSnap => {
+                    let html = "";
+                    let hasRequests = false;
+                    
+                    if(depSnap.exists()) {
+                        depSnap.forEach(child => {
+                            const d = child.val();
+                            if(d.status === 'pending') {
+                                hasRequests = true;
+                                html += `<div class="req-card">
+                                    <strong style="color:var(--text-main); font-size:1rem;">DEPOSIT REQUEST</strong><br>
+                                    <span style="font-size:0.85rem; color:var(--text-muted);">User: ${d.phone} | Amount: <strong>ETB ${d.amount}</strong><br>Txn ID: ${d.txnId}</span>
+                                    <div style="margin-top:10px;">
+                                        <button onclick="handleRequest('deposit', '${child.key}', '${d.user}', ${d.amount}, 'approve')" style="background:#32CD32; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-right:5px; font-weight:bold;">Approve</button>
+                                        <button onclick="handleRequest('deposit', '${child.key}', '${d.user}', ${d.amount}, 'reject')" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:bold;">Reject</button>
+                                    </div>
+                                </div>`;
+                            }
+                        });
+                    }
+                    
+                    if(witSnap.exists()) {
+                        witSnap.forEach(child => {
+                            const w = child.val();
+                            if(w.status === 'pending') {
+                                hasRequests = true;
+                                html += `<div class="req-card withdraw">
+                                    <strong style="color:var(--text-main); font-size:1rem;">WITHDRAW REQUEST</strong><br>
+                                    <span style="font-size:0.85rem; color:var(--text-muted);">User: ${w.phone} | Amount: <strong>ETB ${w.amount}</strong> (Net: ${w.actualAmount})<br>Bank: ${w.address}</span>
+                                    <div style="margin-top:10px;">
+                                        <button onclick="handleRequest('withdraw', '${child.key}', '${w.user}', ${w.amount}, 'approve')" style="background:#32CD32; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-right:5px; font-weight:bold;">Approve</button>
+                                        <button onclick="handleRequest('withdraw', '${child.key}', '${w.user}', ${w.amount}, 'reject')" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:bold;">Reject</button>
+                                    </div>
+                                </div>`;
+                            }
+                        });
+                    }
+                    
+                    if(!hasRequests) {
+                        container.innerHTML = "<p style='color:var(--text-muted); font-size:0.9rem;'>No pending requests at the moment.</p>";
+                    } else {
+                        container.innerHTML = html;
+                    }
+                });
+            });
+        }
+
+        function handleRequest(type, key, userId, amount, action) {
+            if(!confirm(`Are you sure you want to ${action} this ${type} request?`)) return;
+
+            db.ref('users/' + userId).once('value', snap => {
+                const u = snap.val();
+                if(!u) return showToast("User not found!");
+                
+                if(type === 'deposit') {
+                    if(action === 'approve') {
+                        const newBal = (u.balance || 0) + parseFloat(amount);
+                        const newRecharge = (u.totalRecharge || 0) + parseFloat(amount);
+                        db.ref('users/' + userId).update({ balance: newBal, totalRecharge: newRecharge }).then(() => {
+                            db.ref('deposits/' + key).update({ status: 'approved' });
+                            showToast("Deposit Approved!");
+                        });
+                    } else {
+                        db.ref('deposits/' + key).update({ status: 'rejected' });
+                        showToast("Deposit Rejected!");
+                    }
+                } else if (type === 'withdraw') {
+                    if(action === 'approve') {
+                        const newWith = (u.totalWithdrawal || 0) + parseFloat(amount);
+                        db.ref('users/' + userId).update({ totalWithdrawal: newWith }).then(() => {
+                            db.ref('withdrawals/' + key).update({ status: 'approved' });
+                            showToast("Withdrawal Approved!");
+                        });
+                    } else {
+                        const newBal = (u.balance || 0) + parseFloat(amount);
+                        db.ref('users/' + userId).update({ balance: newBal }).then(() => {
+                            db.ref('withdrawals/' + key).update({ status: 'rejected' });
+                            showToast("Withdrawal Rejected & Refunded!");
+                        });
+                    }
+                }
+            });
+        }
+
+        function loadAdminPlans() {
+            db.ref('plans').on('value', snap => {
+                const container = document.getElementById('adminExistingPlans');
+                if(!container) return;
+                container.innerHTML = "";
+                if(!snap.exists()) { container.innerHTML = "No packages found."; return; }
+                
+                let html = "";
+                snap.forEach(child => {
+                    const p = child.val();
+                    const key = child.key;
+                    // --- ኮሚሽን የሚከፍል መሆኑን አድሚኑ እንዲያየው ተጨመረ ---
+                    const commText = p.hasCommission !== false ? "Yes" : "No";
+                    
+                    html += `<div style="background:#f4f4f5; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="color:var(--text-main); font-size:1rem;">${p.name}</strong><br>
+                            <span style="color:var(--text-muted); font-size:0.8rem;">Price: ETB ${p.price} | ROI: ETB ${p.roi}/day | Cycle: ${p.duration} days | Limit: ${p.limit} | Comm: <strong style="color:${p.hasCommission !== false ? 'var(--primary-color)' : '#ef4444'};">${commText}</strong></span>
+                        </div>
+                        <div style="display:flex; gap:5px;">
+                            <button onclick="editAdminPlan('${key}')" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:8px; cursor:pointer;"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteAdminPlan('${key}')" style="background:#ef4444; color:white; border:none; padding:6px 10px; border-radius:8px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        function saveAdminPlan() {
+            const name = document.getElementById('adminPlanName').value.trim();
+            const price = parseFloat(document.getElementById('adminPlanPrice').value);
+            const roi = parseFloat(document.getElementById('adminPlanRoi').value);
+            const duration = parseInt(document.getElementById('adminPlanDuration').value);
+            const limit = parseInt(document.getElementById('adminPlanLimit').value);
+            const hasComm = document.getElementById('adminPlanCommission').value === "true";
+            const img = document.getElementById('adminPlanImg').value.trim();
+
+            if (!name || isNaN(price) || isNaN(roi) || isNaN(duration) || isNaN(limit)) {
+                return showToast("Please fill all package details correctly!");
+            }
+
+            const planData = {
+                name: name,
+                price: price,
+                roi: roi,
+                duration: duration,
+                limit: limit,
+                hasCommission: hasComm,
+                img: img || 'https://images.unsplash.com/photo-1572715371353-8339ab3c6b22?w=400'
+            };
+
+            if (editingPlanKey) {
+                db.ref('plans/' + editingPlanKey).update(planData).then(() => {
+                    showToast("Package Updated!");
+                    cancelEditPlan();
+                });
+            } else {
+                const newKey = 'plan_' + Date.now();
+                db.ref('plans/' + newKey).set(planData).then(() => {
+                    showToast("Package Created!");
+                    clearAdminPlanForm();
+                });
+            }
+        }
+
+        function cancelEditPlan() {
+            editingPlanKey = null;
+            document.getElementById('adminPlanTitle').innerHTML = '<i class="fa-solid fa-plus"></i> Add Bike Package';
+            document.getElementById('adminSavePlanBtn').innerText = 'Publish';
+            document.getElementById('adminCancelEditBtn').style.display = 'none';
+            clearAdminPlanForm();
+        }
+
+        function clearAdminPlanForm() {
+            document.getElementById('adminPlanName').value = "";
+            document.getElementById('adminPlanPrice').value = "";
+            document.getElementById('adminPlanRoi').value = "";
+            document.getElementById('adminPlanDuration').value = "";
+            document.getElementById('adminPlanLimit').value = "";
+            document.getElementById('adminPlanCommission').value = "true";
+            document.getElementById('adminPlanImg').value = "";
+        }
+
+        function editAdminPlan(key) {
+            db.ref('plans/' + key).once('value', snap => {
+                if(!snap.exists()) return;
+                const p = snap.val();
+                editingPlanKey = key;
+                document.getElementById('adminPlanTitle').innerHTML = '<i class="fa-solid fa-pen"></i> Edit Bike Package';
+                document.getElementById('adminSavePlanBtn').innerText = 'Update Package';
+                document.getElementById('adminCancelEditBtn').style.display = 'block';
+
+                document.getElementById('adminPlanName').value = p.name;
+                document.getElementById('adminPlanPrice').value = p.price;
+                document.getElementById('adminPlanRoi').value = p.roi;
+                document.getElementById('adminPlanDuration').value = p.duration;
+                document.getElementById('adminPlanLimit').value = p.limit;
+                document.getElementById('adminPlanCommission').value = p.hasCommission !== false ? "true" : "false";
+                document.getElementById('adminPlanImg').value = p.img || '';
+            });
+        }
+
+        function deleteAdminPlan(key) {
+            if(confirm("Are you sure you want to delete this package?")) {
+                db.ref('plans/' + key).remove().then(() => showToast("Package Deleted!"));
+            }
+        }
+
+        function initApp(data, phoneKey) {
+            currentUser = phoneKey; userData = data;
+            document.getElementById('authModal').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+
+            if(phoneKey === '44') {
+                document.getElementById('bottomNav').style.display = 'none';
+                switchView('admin'); 
+                typeof listenForRequests === 'function' && listenForRequests(); 
+                typeof loadAdminPlans === 'function' && loadAdminPlans(); 
+                loadAdminGifts(); 
+                loadAdminBanks(); 
+            } else {
+                document.getElementById('bottomNav').style.display = 'flex';
+                switchView('home');
+                db.ref('users/' + currentUser).on('value', snap => { userData = snap.val(); updateUI(); });
+                loadShopPlans();
+            }
+        }
+
+        function switchView(viewName) {
+            if(viewName === 'deposit') {
+                goToDepositStep(1); 
+                db.ref('settings/paymentMethods').once('value', snap => {
+                    const bc = document.getElementById('allBankCardsContainer'); bc.innerHTML = "";
+                    if(!snap.exists()) return;
+                    snap.forEach(c => {
+                        const b = c.val();
+                        bc.insertAdjacentHTML('beforeend', `<div class="bank-box"><div style="font-size:0.8rem;">${b.bankName}</div><div style="font-size:1.3rem; font-weight:800;">${b.accountNumber}</div><div style="font-size:0.9rem;">${b.accountName}</div></div>`);
+                    });
+                });
+            }
+            
+            if(viewName === 'bankcard') generateCaptcha();
+            
+            if(viewName === 'withdraw') document.getElementById('withDisplayBal').innerText = parseFloat(userData.balance || 0).toFixed(2);
+            if(viewName === 'team') { document.getElementById('invitePageCode').innerText = window.location.origin + window.location.pathname + "?ref=" + userData.refCode; calculateProfileStats(); }
+            if(viewName === 'profile') calculateProfileStats();
+            if(viewName === 'orders') loadMyOrders();
+            if(viewName === 'transactions') loadTransactions();
+            
+            if(viewName === 'checkin') renderCheckInPage();
+            
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            const tv = document.getElementById('view-' + viewName);
+            if(tv) tv.classList.add('active-view');
+            
+            let navId = 'nav-' + viewName;
+            if(['bankcard', 'transactions', 'changepass'].includes(viewName)) navId = 'nav-profile';
+            if(['reward', 'deposit', 'withdraw', 'gift', 'checkin', 'orders'].includes(viewName)) navId = 'nav-home';
+            if(document.getElementById(navId)) document.getElementById(navId).classList.add('active');
+        }
+
+        function updateUI() {
+            if (document.getElementById('topBarBalance')) document.getElementById('topBarBalance').innerText = parseFloat(userData.balance || 0).toFixed(2);
+            if (document.getElementById('profBalance')) document.getElementById('profBalance').innerText = parseFloat(userData.balance || 0).toFixed(2);
+            if (document.getElementById('profDailyIncome')) document.getElementById('profDailyIncome').innerText = parseFloat(userData.income || 0).toFixed(2);
+            if (document.getElementById('rewardCountDisplay')) document.getElementById('rewardCountDisplay').innerText = userData.rewards || 0;
+            if (document.getElementById('withDisplayBal')) document.getElementById('withDisplayBal').innerText = parseFloat(userData.balance || 0).toFixed(2);
+            
+            let todayProf = 0;
+            let totalInv = userData.totalInvestment || 0; 
+            const todayStr = new Date().toDateString();
+            
+            if(userData.plans) {
+                let sumCost = 0;
+                for(let k in userData.plans) {
+                    let p = userData.plans[k];
+                    if(p.cost) sumCost += parseFloat(p.cost);
+                    if(p.lastClaimDate === todayStr && (p.daysClaimed||0) > 0) {
+                        todayProf += parseFloat(p.daily || 0);
+                    }
+                }
+                if(sumCost > totalInv) totalInv = sumCost; 
+            }
+            if(userData.checkIns && userData.checkIns[todayStr]) todayProf += 3; 
+
+            if (document.getElementById('profTotalInvest')) document.getElementById('profTotalInvest').innerText = parseFloat(totalInv).toFixed(2);
+            if (document.getElementById('profTotalRecharge')) document.getElementById('profTotalRecharge').innerText = parseFloat(userData.totalRecharge || 0).toFixed(2);
+            if (document.getElementById('profTotalWithdraw')) document.getElementById('profTotalWithdraw').innerText = parseFloat(userData.totalWithdrawal || 0).toFixed(2);
+            if (document.getElementById('profTotalProfit')) document.getElementById('profTotalProfit').innerText = parseFloat(userData.income || 0).toFixed(2);
+            if (document.getElementById('profTodayProfit')) document.getElementById('profTodayProfit').innerText = parseFloat(todayProf).toFixed(2);
+            if (document.getElementById('profWeekProfit')) document.getElementById('profWeekProfit').innerText = parseFloat(userData.weekProfit || todayProf).toFixed(2);
+            if (document.getElementById('profTeamComm2')) document.getElementById('profTeamComm2').innerText = parseFloat(userData.commission || 0).toFixed(2);
+
+            if(document.getElementById('view-checkin').classList.contains('active-view')) {
+                renderCheckInPage();
+            }
+        }
+
+        function renderCheckInPage() {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); 
+            const diffToMon = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); 
+            const monday = new Date(today.getFullYear(), today.getMonth(), diffToMon);
+
+            let html = '<div style="display:flex; justify-content:space-between; margin-top:20px;">';
+            const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+            for(let i=0; i<7; i++) {
+                let d = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + i);
+                let dStr = d.toDateString();
+                let isChecked = userData.checkIns && userData.checkIns[dStr];
+                let isToday = (dStr === new Date().toDateString());
+                
+                let bg = isChecked ? 'var(--primary-color)' : '#f4f4f5';
+                let color = isChecked ? 'white' : 'var(--text-muted)';
+                let border = isToday ? '2px solid var(--text-main)' : '1px solid transparent';
+
+                html += `<div style="background:${bg}; color:${color}; padding:10px 5px; border-radius:8px; text-align:center; width:13%; border:${border}; font-size:0.75rem; font-weight:bold; transition: 0.3s;">
+                    ${dayNames[i]}<br><i class="fa-solid ${isChecked ? 'fa-check' : 'fa-calendar-day'}" style="margin-top:5px; font-size:1rem;"></i>
+                </div>`;
+            }
+            html += '</div>';
+            document.getElementById('checkInDaysGrid').innerHTML = html;
+        }
+
+        function doCheckIn() {
+            if (!currentUser) return;
+            const todayStr = new Date().toDateString();
+            if (userData.checkIns && userData.checkIns[todayStr]) {
+                return showToast("You have already checked in today!");
+            }
+            
+            const updates = {};
+            updates['balance'] = (userData.balance || 0) + 3;
+            updates['checkIns/' + todayStr] = true;
+            
+            db.ref('users/' + currentUser).update(updates).then(() => {
+                showToast("Check-in successful! You earned 3 ETB.");
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                updateUI();
+            }).catch(err => {
+                showToast("Error checking in. Please try again.");
+            });
+        }
+
+        function calculateProfileStats() {
+            if (!userData || !userData.refCode) return;
+            db.ref('users').once('value', (snap) => {
+                if(!snap.exists()) return;
+                const arr = Object.values(snap.val()); 
+                const myCode = String(userData.refCode).trim().toUpperCase();
+                
+                const lvl1 = arr.filter(u => String(u.referredBy).trim().toUpperCase() === myCode);
+                const l1c = lvl1.map(u => String(u.refCode).trim().toUpperCase());
+                const lvl2 = arr.filter(u => l1c.includes(String(u.referredBy).trim().toUpperCase()));
+                const l2c = lvl2.map(u => String(u.refCode).trim().toUpperCase());
+                const lvl3 = arr.filter(u => l2c.includes(String(u.referredBy).trim().toUpperCase()));
+                
+                let inv1 = 0, inv2 = 0, inv3 = 0;
+                lvl1.forEach(u => { if(u.plans && Object.keys(u.plans).length > 0) inv1++; });
+                lvl2.forEach(u => { if(u.plans && Object.keys(u.plans).length > 0) inv2++; });
+                lvl3.forEach(u => { if(u.plans && Object.keys(u.plans).length > 0) inv3++; });
+
+                const team = [...lvl1, ...lvl2, ...lvl3];
+                let investors = inv1 + inv2 + inv3;
+
+                if(document.getElementById('teamTotalCnt')) document.getElementById('teamTotalCnt').innerText = team.length;
+                if(document.getElementById('lvl1TotalCnt')) document.getElementById('lvl1TotalCnt').innerText = lvl1.length;
+                if(document.getElementById('lvl2TotalCnt')) document.getElementById('lvl2TotalCnt').innerText = lvl2.length;
+                if(document.getElementById('lvl3TotalCnt')) document.getElementById('lvl3TotalCnt').innerText = lvl3.length;
+                
+                if(document.getElementById('teamInvestCnt')) document.getElementById('teamInvestCnt').innerText = investors;
+                if(document.getElementById('lvl1InvestCnt')) document.getElementById('lvl1InvestCnt').innerText = inv1;
+                if(document.getElementById('lvl2InvestCnt')) document.getElementById('lvl2InvestCnt').innerText = inv2;
+                if(document.getElementById('lvl3InvestCnt')) document.getElementById('lvl3InvestCnt').innerText = inv3;
+                if(document.getElementById('teamTotComm')) document.getElementById('teamTotComm').innerText = parseFloat(userData.commission || 0).toFixed(2);
+
+                const teamListContainer = document.getElementById('teamMembersList');
+                if(teamListContainer) {
+                    let html = '';
+                    const allTeamMembers = [
+                        ...lvl1.map(u => ({ ...u, level: 1 })),
+                        ...lvl2.map(u => ({ ...u, level: 2 })),
+                        ...lvl3.map(u => ({ ...u, level: 3 }))
+                    ];
+
+                    if(allTeamMembers.length === 0) {
+                        html = '<p style="text-align:center; color:var(--text-muted); font-size: 0.85rem; padding: 15px;">No team members yet.</p>';
+                    } else {
+                        allTeamMembers.forEach(member => {
+                            const isActive = (member.plans && Object.keys(member.plans).length > 0);
+                            const statusColor = isActive ? '#32CD32' : '#a1a1aa';
+                            const statusBg = isActive ? '#e8f5e9' : '#f4f4f5';
+                            const statusText = isActive ? 'Active' : 'Inactive';
+                            
+                            let maskedPhone = member.phone ? String(member.phone) : "";
+                            if(maskedPhone.length > 8) {
+                                maskedPhone = maskedPhone.substring(0, 5) + "****" + maskedPhone.substring(maskedPhone.length - 3);
+                            }
+                            const nameDisplay = member.name || maskedPhone;
+
+                            html += `<div style="display:flex; justify-content:space-between; align-items:center; padding: 10px; border-bottom: 1px solid #e4e4e7;">
+                                <div style="display:flex; align-items:center; gap: 10px;">
+                                    <div style="width: 35px; height: 35px; border-radius: 50%; background: #e0f2fe; color: #0ea5e9; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem;">L${member.level}</div>
+                                    <div>
+                                        <div style="font-weight: 700; color: var(--text-main); font-size: 0.85rem;">${nameDisplay}</div>
+                                        <div style="font-size: 0.7rem; color: var(--text-muted);">${maskedPhone}</div>
+                                    </div>
+                                </div>
+                                <div style="background: ${statusBg}; color: ${statusColor}; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">
+                                    ${statusText}
+                                </div>
+                            </div>`;
+                        });
+                    }
+                    teamListContainer.innerHTML = html;
+                }
+            });
+        }
+
+        function loadShopPlans() {
+            db.ref('plans').on('value', snap => {
+                const hc = document.getElementById('homePlanList');
+                if(hc) hc.innerHTML = "";
+                if (!snap.exists()) return;
+                snap.forEach(ch => {
+                    const p = ch.val(); const key = ch.key;
+                    let pCount = 0; if(userData.plans) for(let pk in userData.plans) { if(userData.plans[pk].planId === key) pCount++; }
+                    const lmt = p.limit || 1; const dur = p.duration || 60; const tot = parseFloat((p.roi * dur).toFixed(2));
+                    let btnTxt = "Buy Bike"; let dis = "";
+                    if (pCount >= lmt) { btnTxt = "Limit Reached"; dis = "disabled"; }
+                    
+                    // --- ኮሚሽን የሚከፍል መሆኑን ቼክ ማድረግ ---
+                    const hasComm = p.hasCommission !== false;
+
+                    const html = `
+                    <div class="modern-plan-card animate-up">
+                        <div class="plan-img-container">
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1572715371353-8339ab3c6b22?w=400'}">
+                            <div class="plan-badge"><i class="fa-solid fa-layer-group"></i> Limit: ${pCount}/${lmt}</div>
+                        </div>
+                        <div class="plan-content">
+                            <h4 class="plan-title">${p.name}</h4>
+                            <div class="plan-stats-grid">
+                                <div class="plan-stat-box">
+                                    <div class="stat-label">Price</div>
+                                    <div class="stat-value">ETB ${p.price}</div>
+                                </div>
+                                <div class="plan-stat-box highlight">
+                                    <div class="stat-label">Daily</div>
+                                    <div class="stat-value">+ETB ${p.roi}</div>
+                                </div>
+                                <div class="plan-stat-box">
+                                    <div class="stat-label">Cycle</div>
+                                    <div class="stat-value">${dur} Days</div>
+                                </div>
+                            </div>
+                            <div class="total-return-box">
+                                <span>Total Est. Return</span>
+                                <strong>ETB ${tot}</strong>
+                            </div>
+                            <button class="btn-buy-modern" ${dis} onclick="buyPlan('${key}', ${p.price}, ${p.roi}, ${lmt}, ${dur}, ${hasComm})">
+                                <i class="fa-solid fa-cart-shopping"></i> ${btnTxt}
+                            </button>
+                        </div>
+                    </div>`;
+                    if(hc) hc.insertAdjacentHTML('beforeend', html);
+                });
+            });
+        }
+
+        // --- ፓኬጅ ሲገዛ ኮሚሽን የሚያስብ መሆኑን የሚያረጋግጥ ሎጂክ ተጨመረ ---
+        function buyPlan(pid, cost, roi, lmt, dur, hasComm = true) {
+            let pc = 0; if(userData.plans) for(let k in userData.plans) if(userData.plans[k].planId === pid) pc++;
+            if(pc >= lmt) return showToast("Limit Reached");
+            if(userData.balance < cost) return showToast("Insufficient Balance");
+            
+            const isFirst = (!userData.plans || Object.keys(userData.plans).length === 0);
+            const nk = pid + '_' + Date.now();
+            
+            const newTotalInv = (userData.totalInvestment || 0) + cost;
+
+            db.ref('users/' + currentUser).update({ 
+                balance: userData.balance - cost,
+                totalInvestment: newTotalInv,
+                [`plans/${nk}`]: { active: true, planId: pid, daily: roi, duration: dur, daysClaimed: 0, lastClaimDate: new Date().toDateString(), cost: cost }
+            }).then(() => { 
+                showToast("Bike Purchased!");
+                
+                // አድሚን ኮሚሽን እንዲያስብ ከፈቀደ (hasComm === true) ብቻ ኮሚሽን ይሰራል
+                if(userData.referredBy && userData.referredBy !== 'admin' && hasComm) {
+                    distributeCommissions(userData.referredBy, cost, isFirst);
+                }
+                
+                loadShopPlans(); 
+            });
+        }
+
+        function distributeCommissions(refCode, amount, isFirst) {
+            db.ref('users').once('value', (snap) => {
+                if(!snap.exists()) return;
+                let u1Key = null, u1 = null;
+                snap.forEach(c => { if(c.val().refCode === refCode) { u1Key = c.key; u1 = c.val(); } });
+                
+                if(u1Key) {
+                    let newRewardsU1 = (u1.rewards || 0);
+                    
+                    if (isFirst) {
+                        newRewardsU1 += 1; 
+                        
+                        db.ref('users/' + u1Key).update({ 
+                            balance: (u1.balance||0) + amount*0.20, 
+                            commission: (u1.commission||0) + amount*0.20,
+                            rewards: newRewardsU1 
+                        });
+                        
+                        if(u1.referredBy && u1.referredBy !== 'admin') {
+                            let u2Key = null, u2 = null;
+                            snap.forEach(c => { if(c.val().refCode === u1.referredBy) { u2Key = c.key; u2 = c.val(); } });
+                            if(u2Key) {
+                                db.ref('users/' + u2Key).update({ balance: (u2.balance||0) + amount*0.05, commission: (u2.commission||0) + amount*0.05 });
+                                if(u2.referredBy && u2.referredBy !== 'admin') {
+                                    let u3Key = null, u3 = null;
+                                    snap.forEach(c => { if(c.val().refCode === u2.referredBy) { u3Key = c.key; u3 = c.val(); } });
+                                    if(u3Key) {
+                                        db.ref('users/' + u3Key).update({ balance: (u3.balance||0) + amount*0.02, commission: (u3.commission||0) + amount*0.02 });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function loadMyOrders() {
+            const container = document.getElementById('myOrdersList');
+            container.innerHTML = BIKE_LOADER;
+            
+            if (!userData.plans || Object.keys(userData.plans).length === 0) {
+                return container.innerHTML = `
+                <div class="animate-up" style="text-align:center; padding: 40px 20px;">
+                    <div style="width: 80px; height: 80px; background: #f4f4f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; color: #a1a1aa; font-size: 2rem; box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);">
+                        <i class="fa-solid fa-motorcycle"></i>
+                    </div>
+                    <p style="color:var(--text-main); font-weight: 800; font-size: 1.1rem;">No Active Bikes</p>
+                    <p style="color:var(--text-muted); font-size: 0.85rem; margin-top: 5px; font-weight: 500;">You haven't purchased any e-bikes yet.</p>
+                    <button class="btn-full" style="margin-top: 20px; width: auto; padding: 12px 30px;" onclick="switchView('home')">Explore Fleet</button>
+                </div>`;
+            }
+
+            const todayStr = new Date().toDateString(); 
+            
+            db.ref('plans').once('value', (snap) => {
+                container.innerHTML = "";
+                const allPlans = snap.val() || {};
+                for(let key in userData.plans) {
+                    const uPlan = userData.plans[key];
+                    if(uPlan.active) {
+                        const pid = uPlan.planId || key;
+                        const pDetail = allPlans[pid] || {name: "Lime E-Bike"};
+                        const duration = uPlan.duration || 60;
+                        const isExpired = (uPlan.daysClaimed || 0) >= duration;
+                        const alreadyClaimed = (uPlan.lastClaimDate === todayStr);
+                        
+                        let btnTxt = "Pending Admin Release";
+                        let iconClass = "fa-clock";
+                        let statusColor = "var(--primary-dark)";
+                        let statusBg = "#e8f5e9";
+                        
+                        if (isExpired) { 
+                            btnTxt = "Expired"; 
+                            iconClass = "fa-ban"; 
+                            statusColor = "#ef4444"; 
+                            statusBg = "#fee2e2"; 
+                        } 
+                        else if (alreadyClaimed) { 
+                            btnTxt = "Credited Today"; 
+                            iconClass = "fa-check-circle"; 
+                            statusColor = "#32CD32"; 
+                            statusBg = "#f0fdf4"; 
+                        }
+                        
+                        let percent = Math.min(100, ((uPlan.daysClaimed||0) / duration) * 100);
+                        
+                        container.insertAdjacentHTML('beforeend', `
+                        <div style="background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; border: 1px solid #f4f4f5;" class="animate-up">
+                            <div style="position: absolute; top: 15px; right: 15px; background:${isExpired ? '#fee2e2' : '#e8f5e9'}; color:${isExpired ? '#ef4444' : 'var(--primary-dark)'}; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 5px;">
+                                <i class="fa-solid ${isExpired ? 'fa-ban' : 'fa-bolt'}"></i> ${isExpired ? 'Ended' : 'Active'}
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                                <div style="width: 60px; height: 60px; background: ${isExpired ? '#f4f4f5' : 'linear-gradient(135deg, var(--primary-light), #ffffff)'}; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--primary-color); box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); flex-shrink: 0;">
+                                    <i class="fa-solid fa-motorcycle" style="${isExpired ? 'color: #a1a1aa' : ''}"></i>
+                                </div>
+                                <div>
+                                    <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; text-transform: uppercase;">${pDetail.name}</h3>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Daily Return: <span style="color: var(--primary-dark); font-weight: 800; font-size: 0.95rem;">ETB ${uPlan.daily}</span></div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">
+                                    <span>Progress</span>
+                                    <span style="color: var(--text-main);">${uPlan.daysClaimed||0} / ${duration} Days</span>
+                                </div>
+                                <div style="width: 100%; height: 8px; background: #f4f4f5; border-radius: 10px; overflow: hidden;">
+                                    <div style="width: ${percent}%; height: 100%; background: ${isExpired ? '#a1a1aa' : 'linear-gradient(90deg, var(--primary-color), var(--accent-green))'}; border-radius: 10px; transition: width 1s ease-in-out;"></div>
+                                </div>
+                            </div>
+
+                            <div style="width: 100%; padding: 14px; background: ${statusBg}; color: ${statusColor}; border-radius: 14px; font-weight: 800; font-size: 0.95rem; text-align: center; text-transform: uppercase; letter-spacing: 0.5px; border: 1px dashed ${statusColor};">
+                                <i class="fa-solid ${iconClass}"></i> ${btnTxt}
+                            </div>
+                        </div>`);
+                    }
+                }
+            });
+        }
+
+        function adminReleaseAllProfits() {
+            if(!confirm("Are you sure you want to release daily profits to ALL users now?")) return;
+            
+            const btn = document.getElementById('adminReleaseBtn');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            const todayStr = new Date().toDateString();
+            let totalCredited = 0;
+            let usersProcessed = 0;
+
+            db.ref('users').once('value', snap => {
+                if(!snap.exists()) {
+                    btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Release Daily Profits`;
+                    btn.disabled = false;
+                    return showToast("No users found.");
+                }
+
+                const updates = {};
+                let hasUpdates = false;
+
+                snap.forEach(child => {
+                    const uKey = child.key;
+                    const uData = child.val();
+
+                    if(uData.plans) {
+                        let dailyTotal = 0;
+                        for(let pKey in uData.plans) {
+                            let p = uData.plans[pKey];
+                            if(p.active) {
+                                let duration = p.duration || 60;
+                                let daysClaimed = p.daysClaimed || 0;
+                                
+                                if(daysClaimed < duration && p.lastClaimDate !== todayStr) {
+                                    dailyTotal += parseFloat(p.daily || 0);
+                                    updates[`users/${uKey}/plans/${pKey}/lastClaimDate`] = todayStr;
+                                    updates[`users/${uKey}/plans/${pKey}/daysClaimed`] = daysClaimed + 1;
+                                }
+                            }
+                        }
+
+                        if(dailyTotal > 0) {
+                            updates[`users/${uKey}/balance`] = (uData.balance || 0) + dailyTotal;
+                            updates[`users/${uKey}/income`] = (uData.income || 0) + dailyTotal;
+                            totalCredited += dailyTotal;
+                            hasUpdates = true;
+                        }
+                    }
+                });
+
+                if(hasUpdates) {
+                    db.ref().update(updates).then(() => {
+                        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Release Daily Profits`;
+                        btn.disabled = false;
+                        showToast(`Success! ETB ${totalCredited} released to users.`);
+                        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                    }).catch(err => {
+                        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Release Daily Profits`;
+                        btn.disabled = false;
+                        showToast("Error processing profits.");
+                    });
+                } else {
+                    btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Release Daily Profits`;
+                    btn.disabled = false;
+                    showToast("All active bikes are already paid for today!");
+                }
+            });
+        }
+
+        let isClaiming = false; let boomInterval = null; let boomTime = 0;
+        function startBoom(e) {
+            if (e) e.preventDefault(); 
+            if (isClaiming) return;
+            if (!userData.rewards || userData.rewards <= 0) return showToast("You don't have any unclaimed rewards!");
+
+            boomTime = 0;
+            document.getElementById('boomBtn').classList.add('shake-animation');
+            document.getElementById('boomText').innerText = "KEEP HOLDING...";
+            document.getElementById('boomText').style.color = "white";
+
+            boomInterval = setInterval(() => {
+                boomTime += 100; 
+                let percent = (boomTime / 5000) * 100;
+                document.getElementById('boomProgress').style.width = percent + "%";
+                if (boomTime >= 5000) stopBoom(true); 
+            }, 100);
+        }
+
+        function stopBoom(triggered = false) {
+            clearInterval(boomInterval);
+            document.getElementById('boomBtn').classList.remove('shake-animation');
+            document.getElementById('boomProgress').style.width = "0%";
+            document.getElementById('boomText').innerText = "Hold to BOOM (5s)";
+            document.getElementById('boomText').style.color = "var(--text-main)";
+            if (triggered === true) executeBoomReward();
+        }
+
+        function executeBoomReward() {
+            if (isClaiming) return;
+            isClaiming = true;
+            
+            const newRewards = userData.rewards - 1;
+            const rewardAmount = 20; 
+            
+            db.ref('users/' + currentUser).update({ 
+                rewards: newRewards,
+                balance: (userData.balance || 0) + rewardAmount
+            }).then(() => {
+                isClaiming = false;
+                confetti({ particleCount: 300, spread: 140, origin: { y: 0.5 }, startVelocity: 45, colors: ['#ff0000', '#f59e0b', '#32CD32', '#ffffff'] });
+                document.getElementById('claimModalTitle').innerText = "BOOM! Reward Claimed!";
+                document.getElementById('claimModalIcon').className = "fa-solid fa-bomb";
+                document.getElementById('claimModalIcon').style.color = "#ef4444";
+                document.getElementById('claimModalDesc').innerText = "You exploded the reward and earned 20 ETB!";
+                document.getElementById('claimModalAmount').innerText = rewardAmount.toFixed(2);
+                document.getElementById('claimSuccessModal').style.display = 'flex';
+                updateUI();
+            }).catch(() => { isClaiming = false; });
+        }
+
+        function setDepositAmount(a) { document.getElementById('depAmountPage').value = a; }
+        
+        function goToDepositStep(step) {
+            document.getElementById('depositStep1').style.display = 'none';
+            document.getElementById('depositStep2').style.display = 'none';
+            document.getElementById('depositStep3').style.display = 'none';
+            document.getElementById('depositStep' + step).style.display = 'block';
+        }
+        
+        function submitDepositFromPage() {
+            const amount = parseFloat(document.getElementById('depAmountPage').value);
+            const txn = document.getElementById('depTransIdPage').value.trim();
+            if(!amount || !txn) return showToast("Fill all details");
+
+            if(amount < 1100) return showToast("Min Deposit: 1100 ETB");
+
+            db.ref('deposits').once('value', (snap) => {
+                let used = false;
+                if(snap.exists()) snap.forEach(c => { if(c.val().txnId === txn) used = true; });
+                if (used) return showToast("Transaction ID already used!");
+                
+                db.ref('deposits').push({ 
+                    type: 'deposit', 
+                    amount: amount, 
+                    user: currentUser, 
+                    phone: userData.phone, 
+                    senderName: "N/A", 
+                    txnId: txn, 
+                    status: 'pending', 
+                    timestamp: Date.now() 
+                }).then(() => {
+                    showToast("Deposit submitted for verification!"); 
+                    switchView('home');
+                    document.getElementById('depTransIdPage').value = "";
+                });
+            });
+        }
+
+        function submitWithdraw() {
+            if(!userData.bankInfo || !userData.bankInfo.withdrawPass) {
+                document.getElementById('withdrawInputs').style.display = 'none';
+                document.getElementById('withdrawMsg').style.display = 'block';
+                return;
+            }
+            const amount = parseFloat(document.getElementById('withAmount').value);
+            const pass = document.getElementById('withAuthPass').value;
+            
+            if(amount < 300) return showToast("Min Withdraw: 300 ETB");
+            
+            if(!userData.totalInvestment || userData.totalInvestment <= 0) {
+                return showToast("You must invest (buy a bike) first to withdraw!");
+            }
+            
+            if(pass !== userData.bankInfo.withdrawPass) return showToast("Incorrect Password!");
+            if(amount > userData.balance) return showToast("Insufficient Balance");
+            
+            const fee = amount * 0.16;
+            const actualAmount = amount - fee;
+
+            db.ref('users/' + currentUser).update({ balance: userData.balance - amount }).then(() => {
+                db.ref('withdrawals').push({ 
+                    type: 'withdraw', 
+                    amount: amount,
+                    actualAmount: actualAmount,
+                    fee: fee, 
+                    user: currentUser, 
+                    phone: userData.phone, 
+                    address: `${userData.bankInfo.bankName} - ${userData.bankInfo.accNum} (${userData.bankInfo.accName})`, 
+                    status: 'pending', 
+                    timestamp: Date.now() 
+                });
+                document.getElementById('withAmount').value = ""; document.getElementById('withAuthPass').value = "";
+                showToast("Withdrawal requested!"); switchView('home');
+            });
+        }
+
+        function showTxnTab(tab) {
+            document.querySelectorAll('.txn-tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+
+            document.getElementById('txn-dep-list').style.display = "none";
+            document.getElementById('txn-wit-list').style.display = "none";
+            document.getElementById('txn-inc-list').style.display = "none";
+
+            document.getElementById('txn-' + tab + '-list').style.display = "block";
+        }
+
+        function loadTransactions() {
+            showTxnTab('dep'); 
+            const depList = document.getElementById('txn-dep-list');
+            const witList = document.getElementById('txn-wit-list');
+            const incList = document.getElementById('txn-inc-list');
+
+            depList.innerHTML = BIKE_LOADER;
+            witList.innerHTML = BIKE_LOADER;
+            
+            incList.innerHTML = `
+            <div style="background: linear-gradient(135deg, var(--primary-dark), var(--primary-color)); border-radius: 20px; padding: 25px; text-align: center; color: white; box-shadow: 0 10px 25px rgba(50, 205, 50, 0.3); margin-bottom: 20px;">
+                <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; opacity: 0.9;">Total Bike Revenue</div>
+                <div style="font-size: 2.2rem; font-weight: 800; letter-spacing: 1px;">ETB ${parseFloat(userData.income || 0).toFixed(2)}</div>
+                <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-top: 15px; display: inline-block; backdrop-filter: blur(5px);">
+                    <i class="fa-solid fa-bolt"></i> Auto-added to main balance daily
+                </div>
+            </div>`;
+
+            db.ref('deposits').orderByChild('user').equalTo(currentUser).once('value', snap => {
+                depList.innerHTML = "";
+                if(!snap.exists()) { depList.innerHTML = "<div style='text-align:center; color:var(--text-muted); padding:40px;'><i class='fa-solid fa-folder-open' style='font-size:3rem; opacity:0.3; margin-bottom:15px;'></i><br>No deposit records.</div>"; return; }
+                let html = "";
+                snap.forEach(child => {
+                    const d = child.val();
+                    const date = new Date(d.timestamp || Date.now()).toLocaleString();
+                    let statusColor = d.status === 'pending' ? '#f59e0b' : (d.status === 'approved' ? '#32CD32' : '#ef4444');
+                    let statusBg = d.status === 'pending' ? '#fffbeb' : (d.status === 'approved' ? '#f0fdf4' : '#fef2f2');
+                    
+                    html = `
+                    <div class="txn-card">
+                        <div class="txn-icon" style="background: #e0f2fe; color: #0ea5e9;">
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </div>
+                        <div class="txn-info">
+                            <div class="txn-title">Recharge</div>
+                            <div class="txn-date">${date}</div>
+                            <div style="font-size: 0.65rem; color: #a1a1aa; margin-top: 2px;">Ref: ${d.txnId}</div>
+                        </div>
+                        <div class="txn-amount-box">
+                            <div class="txn-amount" style="color: var(--text-main);">+ETB ${d.amount}</div>
+                            <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${d.status}</div>
+                        </div>
+                    </div>` + html;
+                });
+                depList.innerHTML = html;
+            });
+
+            db.ref('withdrawals').orderByChild('user').equalTo(currentUser).once('value', snap => {
+                witList.innerHTML = "";
+                if(!snap.exists()) { witList.innerHTML = "<div style='text-align:center; color:var(--text-muted); padding:40px;'><i class='fa-solid fa-folder-open' style='font-size:3rem; opacity:0.3; margin-bottom:15px;'></i><br>No withdrawal records.</div>"; return; }
+                let html = "";
+                snap.forEach(child => {
+                    const w = child.val();
+                    const date = new Date(w.timestamp || Date.now()).toLocaleString();
+                    let statusColor = w.status === 'pending' ? '#f59e0b' : (w.status === 'approved' ? '#32CD32' : '#ef4444');
+                    let statusBg = w.status === 'pending' ? '#fffbeb' : (w.status === 'approved' ? '#f0fdf4' : '#fef2f2');
+
+                    html = `
+                    <div class="txn-card">
+                        <div class="txn-icon" style="background: #fef2f2; color: #ef4444;">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </div>
+                        <div class="txn-info">
+                            <div class="txn-title">Withdraw</div>
+                            <div class="txn-date">${date}</div>
+                            <div style="font-size: 0.65rem; color: #ef4444; font-weight:700; margin-top: 2px;">Fee: -16%</div>
+                        </div>
+                        <div class="txn-amount-box">
+                            <div class="txn-amount" style="color: var(--text-main);">-ETB ${w.amount}</div>
+                            <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${w.status}</div>
+                        </div>
+                    </div>` + html;
+                });
+                witList.innerHTML = html;
+            });
+        }
+
+        function addAdminBank() {
+            const bName = document.getElementById('adminDepBankName').value.trim();
+            const accNum = document.getElementById('adminDepAccNum').value.trim();
+            const accName = document.getElementById('adminDepAccName').value.trim();
+            
+            if(!bName || !accNum || !accName) return showToast("Fill all bank details!");
+            
+            const key = 'bank_' + Date.now();
+            db.ref('settings/paymentMethods/' + key).set({
+                bankName: bName,
+                accountNumber: accNum,
+                accountName: accName
+            }).then(() => {
+                showToast("Deposit Bank Added!");
+                document.getElementById('adminDepBankName').value = "";
+                document.getElementById('adminDepAccNum').value = "";
+                document.getElementById('adminDepAccName').value = "";
+            });
+        }
+
+        function loadAdminBanks() {
+            db.ref('settings/paymentMethods').on('value', snap => {
+                const container = document.getElementById('adminBankList');
+                if(!container) return;
+                container.innerHTML = "";
+                if(!snap.exists()) { container.innerHTML = "No banks found."; return; }
+                
+                let html = "";
+                snap.forEach(child => {
+                    const b = child.val();
+                    html += `<div style="background:#f4f4f5; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong style="color:var(--text-main); font-size:1rem;">${b.bankName}</strong><br>
+                            <span style="color:var(--text-muted); font-size:0.85rem; font-weight:bold;">${b.accountNumber} - ${b.accountName}</span>
+                        </div>
+                        <button onclick="db.ref('settings/paymentMethods/${child.key}').remove()" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        function createGiftCode() {
+            let code = document.getElementById('adminGiftCode').value.trim().toUpperCase();
+            const amount = parseFloat(document.getElementById('adminGiftAmount').value);
+            if(!amount) return showToast("Enter reward amount!");
+            if(!code) {
+                const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                code = "LIME-";
+                for(let i=0; i<6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            db.ref('gifts/' + code).set({ amount: amount, active: true, timestamp: Date.now() }).then(() => {
+                showToast("Gift Code Generated!");
+                document.getElementById('adminGiftCode').value = '';
+                document.getElementById('adminGiftAmount').value = '';
+            });
+        }
+
+        function loadAdminGifts() {
+            db.ref('gifts').on('value', snap => {
+                const container = document.getElementById('adminGiftList');
+                if(!container) return;
+                container.innerHTML = "";
+                if(!snap.exists()) { container.innerHTML = "No codes found."; return; }
+                let html = "";
+                snap.forEach(child => {
+                    const g = child.val();
+                    const color = g.active ? "var(--primary-dark)" : "#ef4444";
+                    html += `<div style="background:#f4f4f5; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="font-weight:bold; font-size:1rem;">${child.key}</div>
+                        <div style="color:${color}; font-weight:800; font-size:0.8rem;">ETB ${g.amount} (${g.active ? 'Active' : 'Used'})</div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        let isRedeeming = false;
+        function redeemGiftCode() {
+            if(isRedeeming) return;
+            const code = document.getElementById('giftCodeInput').value.trim().toUpperCase();
+            if(!code) return showToast("Enter a gift code!");
+            isRedeeming = true;
+            
+            db.ref('gifts/' + code).once('value', snap => {
+                if(!snap.exists()) {
+                    isRedeeming = false;
+                    return showToast("Invalid Gift Code!");
+                }
+                if(!snap.val().active) {
+                    isRedeeming = false;
+                    return showToast("Code already used!");
+                }
+                
+                const amt = parseFloat(snap.val().amount);
+                db.ref('gifts/' + code).update({ active: false, usedBy: currentUser }).then(() => {
+                    db.ref('users/' + currentUser).update({ balance: (userData.balance || 0) + amt }).then(() => {
+                        isRedeeming = false;
+                        document.getElementById('giftCodeInput').value = '';
+                        showToast(`Success! You received ETB ${amt}`);
+                        updateUI();
+                    });
+                }).catch(() => { isRedeeming = false; });
+            });
+        }
+
+        let slideIndex = 0;
+        function showSlides() {
+            let slides = document.getElementsByClassName("mySlides");
+            let dots = document.getElementsByClassName("dot");
+            if(!slides.length) return setTimeout(showSlides, 1000);
+            
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            for (let i = 0; i < dots.length; i++) {
+                dots[i].className = dots[i].className.replace(" active", "");
+            }
+            
+            slideIndex++; 
+            if (slideIndex > slides.length) { slideIndex = 1; }
+            
+            slides[slideIndex-1].style.display = "block"; 
+            if(dots.length > 0) { dots[slideIndex-1].className += " active"; }
+            
+            setTimeout(showSlides, 4000); 
+        } 
+        showSlides();
+
+        function closeModal(id) { 
+            document.getElementById(id).style.display = 'none'; 
+            if(id === 'claimSuccessModal') {
+                document.getElementById('claimModalTitle').innerText = "Revenue Added!";
+                document.getElementById('claimModalIcon').className = "fa-solid fa-money-bill-trend-up";
+                document.getElementById('claimModalIcon').style.color = "var(--primary-color)";
+                document.getElementById('claimModalDesc').innerText = "Your daily ride revenue is ready.";
+            }
+        }
+        function copyRefLink() { navigator.clipboard.writeText(window.location.origin + window.location.pathname + "?ref=" + userData.refCode); showToast("Link Copied!"); }
+        function showToast(text) { const t = document.getElementById("toast"); t.className = "show"; t.innerText = text; setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000); }
+    </script>
+</body>
+</html>
