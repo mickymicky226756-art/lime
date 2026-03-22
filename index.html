@@ -2127,6 +2127,8 @@
                     let statusColor = d.status === 'pending' ? '#f59e0b' : (d.status === 'approved' ? '#32CD32' : '#ef4444');
                     let statusBg = d.status === 'pending' ? '#fffbeb' : (d.status === 'approved' ? '#f0fdf4' : '#fef2f2');
                     
+                    let displayStatus = d.status === 'pending' ? 'PROCESSING' : (d.status === 'approved' ? 'SUCCESS' : 'FAILED');
+
                     html = `
                     <div class="txn-card">
                         <div class="txn-icon" style="background: #e0f2fe; color: #0ea5e9;">
@@ -2139,7 +2141,7 @@
                         </div>
                         <div class="txn-amount-box">
                             <div class="txn-amount" style="color: var(--text-main);">+ETB ${d.amount}</div>
-                            <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${d.status}</div>
+                            <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${displayStatus}</div>
                         </div>
                     </div>` + html;
                 });
@@ -2155,6 +2157,8 @@
                     const date = new Date(w.timestamp || Date.now()).toLocaleString();
                     let statusColor = w.status === 'pending' ? '#f59e0b' : (w.status === 'approved' ? '#32CD32' : '#ef4444');
                     let statusBg = w.status === 'pending' ? '#fffbeb' : (w.status === 'approved' ? '#f0fdf4' : '#fef2f2');
+                    
+                    let displayStatus = w.status === 'pending' ? 'PROCESSING' : (w.status === 'approved' ? 'SUCCESS' : 'FAILED');
 
                     html = `
                     <div class="txn-card">
@@ -2168,7 +2172,7 @@
                         </div>
                         <div class="txn-amount-box">
                             <div class="txn-amount" style="color: var(--text-main);">-ETB ${w.amount}</div>
-                            <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${w.status}</div>
+                            <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${displayStatus}</div>
                         </div>
                     </div>` + html;
                 });
