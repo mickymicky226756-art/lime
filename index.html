@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LimeBikes | Invest & Earn</title>
+    <title>LimeBikes Ghana | Invest & Earn</title>
 
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2972/2972185.png">    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -410,7 +410,7 @@
             <div id="loginForm">
                 <div class="auth-input-group">
                     <i class="fa-solid fa-mobile-screen"></i>
-                    <span>+251</span>
+                    <span>+233</span>
                     <input type="tel" id="loginPhone" placeholder="Phone Number" maxlength="9">
                 </div>
                 <div class="auth-input-group">
@@ -427,7 +427,7 @@
                 
                 <div class="auth-input-group">
                     <i class="fa-solid fa-mobile-screen"></i>
-                    <span>+251</span>
+                    <span>+233</span>
                     <input type="tel" id="regPhone" placeholder="Phone Number" maxlength="9">
                 </div>
                 
@@ -459,7 +459,7 @@
             <i class="fa-solid fa-money-bill-trend-up" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 15px;" id="claimModalIcon"></i>
             <h2 style="color:var(--text-main); font-weight:800; text-transform: uppercase;" id="claimModalTitle">Revenue Added!</h2>
             <p id="claimModalDesc" style="color:var(--text-muted); margin: 10px 0; font-weight:600;">Your daily ride revenue is ready.</p>
-            <div style="font-size: 3rem; font-weight: 800; color: var(--text-main); margin: 15px 0;">ETB <span id="claimModalAmount">0.00</span></div>
+            <div style="font-size: 3rem; font-weight: 800; color: var(--text-main); margin: 15px 0;">GHS <span id="claimModalAmount">0.00</span></div>
             <button class="btn-full" onclick="closeModal('claimSuccessModal')">Awesome!</button>
         </div>
     </div>
@@ -470,7 +470,7 @@
             <div class="logo"><i class="fa-solid fa-bicycle"></i> LIME</div>
             <div class="top-balance" onclick="switchView('profile')">
                 <i class="fa-solid fa-wallet"></i> 
-                <span>ETB <span id="topBarBalance">0.00</span></span>
+                <span>GHS <span id="topBarBalance">0.00</span></span>
             </div>
         </header>
 
@@ -566,7 +566,7 @@
                     <h3 style="color: var(--text-main); margin-bottom: 15px; font-weight: 800; font-size: 1.2rem; text-align: center;">Welcome to LimeBikes Investment!</h3>
                     
                     <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px; font-weight: 500;">
-                        <strong>LimeBikes</strong> is a modern electric bike (E-Bike) rental investment platform! Our goal is to modernize urban transportation and create mutual benefits.
+                        <strong>LimeBikes</strong> is a modern electric bike (E-Bike) rental investment platform! Our goal is to modernize urban transportation in Ghana and create mutual benefits.
                     </p>
                     
                     <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
@@ -597,18 +597,9 @@
                 <h3 style="color:var(--text-main); font-weight:800; margin-bottom:15px; font-size: 1.2rem;">How can we help you?</h3>
                 <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:25px; line-height:1.6; font-weight:600;">If you have any questions regarding deposits, withdrawals, or your e-bike investments, our dedicated support team is ready to assist you anytime.</p>
                 
-                <a href="https://t.me/Isabella67980" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; margin-bottom: 15px;">
-                    <i class="fa-brands fa-telegram" style="font-size:1.5rem;"></i> Contact Support
-                </a>
-                <a href="https://t.me/Limebike11" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #0088cc; color: white; margin-bottom: 15px; box-shadow: 0 8px 15px rgba(0, 136, 204, 0.3);">
-                    <i class="fa-brands fa-telegram" style="font-size:1.5rem;"></i> Telegram Group
-                </a>
-                <a href="https://chat.whatsapp.com/BgT52OtLMVbGHXE17t2hAT?mode=gi_t" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #25D366; color: white; margin-bottom: 15px; box-shadow: 0 8px 15px rgba(37, 211, 102, 0.3);">
-                    <i class="fa-brands fa-whatsapp" style="font-size:1.5rem;"></i> WhatsApp Group
-                </a>
-                <a href="https://tiktok.com/@limebike123" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #000000; color: white; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);">
-                    <i class="fa-brands fa-tiktok" style="font-size:1.5rem;"></i> Follow TikTok
-                </a>
+                <div id="supportLinksContainer">
+                    <div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div>
+                </div>
             </div>
         </section>
 
@@ -696,7 +687,7 @@
                     </div>
                     
                     <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; margin-bottom: 30px;">
-                        Get 1 Reward (20 ETB) every time a friend you invite buys their first bike!
+                        Get 1 Reward (1 GHS) every time a friend you invite buys their first bike!
                     </p>
 
                     <div class="boom-container" id="boomBtn" 
@@ -738,7 +729,7 @@
             <div class="page-header">
                 <button class="back-btn" onclick="switchView('home')"><i class="fa-solid fa-arrow-left"></i></button>
                 <h2>Daily Check In</h2>
-                <p>Earn 3 ETB every day!</p>
+                <p>Earn 0.2 GHS every day!</p>
             </div>
             <div class="content-box" style="text-align: center;">
                 <i class="fa-solid fa-calendar-days" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 20px;"></i>
@@ -762,7 +753,7 @@
                     <h4 style="margin-bottom:15px; color:var(--text-main); text-transform:uppercase;">Step 1: Amount</h4>
                     
                     <div class="input-group" style="margin-top:20px; margin-bottom: 10px;">
-                        <label>Amount to Send (Min: 1100 ETB)</label>
+                        <label id="depositMinLabel">Amount to Send (Min: 1100 GHS)</label>
                         <input type="number" id="depAmountPage" placeholder="Enter Amount">
                     </div>
 
@@ -816,7 +807,7 @@
             <div class="content-box">
                 <div style="text-align:center; margin-bottom:25px;">
                     <p style="color:var(--text-muted); font-size:0.8rem; font-weight:700; text-transform:uppercase;">Available Balance</p>
-                    <h2 style="font-size:2.5rem; color:var(--text-main); font-weight:800;">ETB <span id="withDisplayBal">0.00</span></h2>
+                    <h2 style="font-size:2.5rem; color:var(--text-main); font-weight:800;">GHS <span id="withDisplayBal">0.00</span></h2>
                 </div>
 
                 <div id="withdrawInputs">
@@ -824,7 +815,7 @@
                         <label>Withdrawal Amount</label>
                         <input type="number" id="withAmount" placeholder="Enter amount (Min 300)">
                     </div>
-                    <div style="font-size:0.75rem; color:#ef4444; margin-top:-5px; margin-bottom:15px; font-weight:bold;">* A 16% withdrawal fee will be deducted.</div>
+                    <div id="withdrawFeeLabel" style="font-size:0.75rem; color:#ef4444; margin-top:-5px; margin-bottom:15px; font-weight:bold;">* A 16% withdrawal fee will be deducted.</div>
                     
                     <div class="input-group">
                         <label>Security Password</label>
@@ -872,38 +863,38 @@
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align: left;">
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-wallet" style="color:var(--primary-color);"></i> Balance</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profBalance">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profBalance">0.00</span></div>
                     </div>
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-chart-line" style="color:var(--accent-green);"></i> Daily</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profDailyIncome">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profDailyIncome">0.00</span></div>
                     </div>
                 </div>
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align: left; margin-top: 10px;">
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-users-viewfinder" style="color:var(--text-main);"></i> Team reward</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTeamComm2">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profTeamComm2">0.00</span></div>
                     </div>
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-download" style="color:#0ea5e9;"></i> Total Recharge</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTotalRecharge">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profTotalRecharge">0.00</span></div>
                     </div>
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-upload" style="color:#ef4444;"></i> Total Withdraw</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTotalWithdraw">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profTotalWithdraw">0.00</span></div>
                     </div>
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-sack-dollar" style="color:#f59e0b;"></i> Total Profit</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTotalProfit">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profTotalProfit">0.00</span></div>
                     </div>
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-calendar-week" style="color:#8b5cf6;"></i> Week Profit</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profWeekProfit">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profWeekProfit">0.00</span></div>
                     </div>
                     <div style="background:white; padding:15px; border-radius:12px; box-shadow:var(--shadow-soft);">
                         <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;"><i class="fa-solid fa-coins" style="color:var(--primary-color);"></i> Today Profit</div>
-                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">ETB <span id="profTodayProfit">0.00</span></div>
+                        <div style="font-size:1.1rem; font-weight:800; color:var(--text-main); margin-top:5px;">GHS <span id="profTodayProfit">0.00</span></div>
                     </div>
                 </div>
 
@@ -989,7 +980,7 @@
             <div class="content-box">
                 <div class="input-group">
                     <label>Bank Name</label>
-                    <input type="text" id="bindBankName" placeholder="CBE, Telebirr, etc">
+                    <input type="text" id="bindBankName" placeholder="GCB, MTN MoMo, etc">
                 </div>
                 <div class="input-group">
                     <label>Account Holder</label>
@@ -1031,9 +1022,31 @@
                     </button>
                 </div>
 
+                <div class="admin-box" style="border-left-color: #f59e0b; background: #fffbeb;">
+                    <h4 style="margin-bottom:15px; color:#92400e;"><i class="fa-solid fa-sliders" style="color:#f59e0b;"></i> App Settings</h4>
+                    <div class="input-group">
+                        <label>Registration Bonus (GHS)</label>
+                        <input type="number" id="adminRegBonus" placeholder="e.g. 300">
+                    </div>
+                    <div class="input-group">
+                        <label>Min Deposit (GHS)</label>
+                        <input type="number" id="adminMinDeposit" placeholder="e.g. 1100">
+                    </div>
+                    <div class="input-group">
+                        <label>Min Withdrawal (GHS)</label>
+                        <input type="number" id="adminMinWithdraw" placeholder="e.g. 300">
+                    </div>
+                    <div class="input-group">
+                        <label>Withdrawal Fee (%)</label>
+                        <input type="number" id="adminWithFee" placeholder="e.g. 16">
+                    </div>
+                    <button class="btn-full" style="background:#f59e0b; color:white; box-shadow:0 8px 15px rgba(245,158,11,0.3);" onclick="saveAppSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+                    <div id="adminCurrentSettings" style="margin-top:15px; font-size:0.8rem; color:var(--text-muted);"></div>
+                </div>
+
                 <div class="admin-box">
                     <h4 style="margin-bottom:15px;"><i class="fa-solid fa-building-columns"></i> Add Deposit Bank</h4>
-                    <div class="input-group"><input type="text" id="adminDepBankName" placeholder="Bank Name (e.g. CBE, Telebirr)"></div>
+                    <div class="input-group"><input type="text" id="adminDepBankName" placeholder="Bank Name (e.g. GCB, MTN MoMo)"></div>
                     <div class="input-group"><input type="number" id="adminDepAccNum" placeholder="Account Number"></div>
                     <div class="input-group"><input type="text" id="adminDepAccName" placeholder="Account Holder Name"></div>
                     <button class="btn-full" onclick="addAdminBank()">Add Bank Account</button>
@@ -1041,10 +1054,23 @@
                     <div id="adminBankList" style="font-size:0.85rem;"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
                 </div>
 
+                <div class="admin-box" style="border-left-color: #25D366; background: #f0fdf4;">
+                    <h4 style="margin-bottom:15px; color:#15803d;"><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> WhatsApp Links</h4>
+                    <div class="input-group">
+                        <label>Support Link</label>
+                        <input type="text" id="adminWaSupportLink" placeholder="https://wa.me/233...">
+                    </div>
+                    <div class="input-group">
+                        <label>Group Link</label>
+                        <input type="text" id="adminWaGroupLink" placeholder="https://chat.whatsapp.com/...">
+                    </div>
+                    <button class="btn-full" style="background:#25D366; color:white; box-shadow: 0 8px 15px rgba(37,211,102,0.3);" onclick="saveWhatsAppLinks()"><i class="fa-brands fa-whatsapp"></i> Save Links</button>
+                    <div id="adminWaCurrentLinks" style="margin-top:15px; font-size:0.8rem; color:var(--text-muted);"></div>
+                </div>
+
                 <div class="admin-box">
-                    <h4 style="margin-bottom:15px;"><i class="fa-solid fa-gift"></i> Create Gift Code</h4>
                     <div class="input-group"><input type="text" id="adminGiftCode" placeholder="Custom Code (Leave empty for random)" style="text-transform:uppercase;"></div>
-                    <div class="input-group"><input type="number" id="adminGiftAmount" placeholder="Reward Amount (ETB)"></div>
+                    <div class="input-group"><input type="number" id="adminGiftAmount" placeholder="Reward Amount (GHS)"></div>
                     <button class="btn-full" onclick="createGiftCode()">Generate Code</button>
                     <h4 style="margin:20px 0 10px;">Generated Codes</h4>
                     <div id="adminGiftList" style="font-size:0.85rem;"><div class="bike-loader-container"><div class="bike-wrapper"><div class="wind-line wind-1"></div><div class="wind-line wind-2"></div><div class="wind-line wind-3"></div><i class="fa-solid fa-bicycle bike-icon"></i></div><div class="loading-text-modern">Loading...</div></div></div>
@@ -1053,8 +1079,8 @@
                 <div class="admin-box">
                     <h4 id="adminPlanTitle"><i class="fa-solid fa-plus"></i> Add Bike Package</h4>
                     <div class="input-group"><input type="text" id="adminPlanName" placeholder="Package Name (e.g. Lime E-Bike 1)"></div>
-                    <div class="input-group"><input type="number" id="adminPlanPrice" placeholder="Price (ETB)"></div>
-                    <div class="input-group"><input type="number" id="adminPlanRoi" placeholder="Daily Profit (ETB)"></div>
+                    <div class="input-group"><input type="number" id="adminPlanPrice" placeholder="Price (GHS)"></div>
+                    <div class="input-group"><input type="number" id="adminPlanRoi" placeholder="Daily Profit (GHS)"></div>
                     <div class="input-group"><input type="number" id="adminPlanDuration" placeholder="Duration (Days)"></div>
                     <div class="input-group"><input type="number" id="adminPlanLimit" placeholder="Purchase Limit"></div>
                     
@@ -1136,7 +1162,7 @@
 
         const translations = {
             en: { deposit: "Deposit", withdraw: "Withdraw", service: "Support", invite: "Team", gift: "Gift", reward: "Reward", navHome: "Home", navShop: "Bikes", navTeam: "Team", navProfile: "Profile" },
-            am: { deposit: "ገንዘብ አስገባ", withdraw: "ገን ঐতি", service: "እርዳታ", invite: "ቡድን", gift: "ስጦታ", reward: "ሽልማት", navHome: "ዋና ገጽ", navShop: "ብስክሌት", navTeam: "ቡድን", navProfile: "ፕሮፋይል" }
+            gh: { deposit: "Deposit", withdraw: "Withdraw", service: "Support", invite: "Team", gift: "Gift", reward: "Reward", navHome: "Home", navShop: "Bikes", navTeam: "Team", navProfile: "Profile" }
         };
         let currentLang = 'en';
 
@@ -1244,7 +1270,7 @@
                 return showToast("Admin Access Granted");
             }
 
-            const phone = "251" + sanitizePhone(rawPhone);
+            const phone = "233" + sanitizePhone(rawPhone);
             db.ref('users/' + phone).once('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data && data.password === pass) initApp(data, phone);
@@ -1262,7 +1288,7 @@
             if(pass !== passConfirm) return showToast("Passwords do not match!");
             if (!/^[79][0-9]{8}$/.test(rawPhone)) return showToast("Phone must start with 9 or 7.");
 
-            const phone = "251" + rawPhone;
+            const phone = "233" + rawPhone;
             db.ref('users/' + phone).once('value', (snapshot) => {
                 if (snapshot.exists()) return showToast("Phone already registered");
                 
@@ -1271,7 +1297,7 @@
                 for(let i=0; i<15; i++) newCode += chars.charAt(Math.floor(Math.random() * chars.length));
                 
                 const newUser = {
-                    name: autoName, phone: phone, password: pass, balance: 300, income: 0, 
+                    name: autoName, phone: phone, password: pass, balance: appSettings.regBonus, income: 0, 
                     commission: 0, refCode: newCode, referredBy: refCode || "admin", rewards: 0, plans: {}
                 };
                 db.ref('users/' + phone).set(newUser).then(() => {
@@ -1296,7 +1322,7 @@
                                 hasRequests = true;
                                 html += `<div class="req-card">
                                     <strong style="color:var(--text-main); font-size:1rem;">DEPOSIT REQUEST</strong><br>
-                                    <span style="font-size:0.85rem; color:var(--text-muted);">User: ${d.phone} | Amount: <strong>ETB ${d.amount}</strong><br>Txn ID: ${d.txnId}</span>
+                                    <span style="font-size:0.85rem; color:var(--text-muted);">User: ${d.phone} | Amount: <strong>GHS ${d.amount}</strong><br>Txn ID: ${d.txnId}</span>
                                     <div style="margin-top:10px;">
                                         <button onclick="handleRequest('deposit', '${child.key}', '${d.user}', ${d.amount}, 'approve')" style="background:#32CD32; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-right:5px; font-weight:bold;">Approve</button>
                                         <button onclick="handleRequest('deposit', '${child.key}', '${d.user}', ${d.amount}, 'reject')" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:bold;">Reject</button>
@@ -1313,7 +1339,7 @@
                                 hasRequests = true;
                                 html += `<div class="req-card withdraw">
                                     <strong style="color:var(--text-main); font-size:1rem;">WITHDRAW REQUEST</strong><br>
-                                    <span style="font-size:0.85rem; color:var(--text-muted);">User: ${w.phone} | Amount: <strong>ETB ${w.amount}</strong> (Net: ${w.actualAmount})<br>Bank: ${w.address}</span>
+                                    <span style="font-size:0.85rem; color:var(--text-muted);">User: ${w.phone} | Amount: <strong>GHS ${w.amount}</strong> (Net: ${w.actualAmount})<br>Bank: ${w.address}</span>
                                     <div style="margin-top:10px;">
                                         <button onclick="handleRequest('withdraw', '${child.key}', '${w.user}', ${w.amount}, 'approve')" style="background:#32CD32; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; margin-right:5px; font-weight:bold;">Approve</button>
                                         <button onclick="handleRequest('withdraw', '${child.key}', '${w.user}', ${w.amount}, 'reject')" style="background:#ef4444; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:bold;">Reject</button>
@@ -1386,7 +1412,7 @@
                     html += `<div style="background:#f4f4f5; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
                         <div>
                             <strong style="color:var(--text-main); font-size:1rem;">${p.name}</strong><br>
-                            <span style="color:var(--text-muted); font-size:0.8rem;">Price: ETB ${p.price} | ROI: ETB ${p.roi}/day | Cycle: ${p.duration} days | Limit: ${p.limit} | Comm: <strong style="color:${p.hasCommission !== false ? 'var(--primary-color)' : '#ef4444'};">${commText}</strong></span>
+                            <span style="color:var(--text-muted); font-size:0.8rem;">Price: GHS ${p.price} | ROI: GHS ${p.roi}/day | Cycle: ${p.duration} days | Limit: ${p.limit} | Comm: <strong style="color:${p.hasCommission !== false ? 'var(--primary-color)' : '#ef4444'};">${commText}</strong></span>
                         </div>
                         <div style="display:flex; gap:5px;">
                             <button onclick="editAdminPlan('${key}')" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:8px; cursor:pointer;"><i class="fa-solid fa-pen"></i></button>
@@ -1489,12 +1515,22 @@
                 typeof listenForRequests === 'function' && listenForRequests(); 
                 typeof loadAdminPlans === 'function' && loadAdminPlans(); 
                 loadAdminGifts(); 
-                loadAdminBanks(); 
+                loadAdminBanks();
+                loadAdminWaLinks();
+                loadAdminCurrentSettings();
+                loadAppSettings(); 
             } else {
                 document.getElementById('bottomNav').style.display = 'flex';
                 switchView('home');
                 db.ref('users/' + currentUser).on('value', snap => { userData = snap.val(); updateUI(); });
                 loadShopPlans();
+                loadSupportLinks();
+                loadAppSettings(() => {
+                    const depLabel = document.getElementById('depositMinLabel');
+                    if(depLabel) depLabel.textContent = `Amount to Send (Min: ${appSettings.minDeposit} GHS)`;
+                    const feeLabel = document.getElementById('withdrawFeeLabel');
+                    if(feeLabel) feeLabel.textContent = `* A ${appSettings.withdrawFee}% withdrawal fee will be deducted.`;
+                });
             }
         }
 
@@ -1605,11 +1641,11 @@
             }
             
             const updates = {};
-            updates['balance'] = (userData.balance || 0) + 3;
+            updates['balance'] = (userData.balance || 0) + 0.2;
             updates['checkIns/' + todayStr] = true;
             
             db.ref('users/' + currentUser).update(updates).then(() => {
-                showToast("Check-in successful! You earned 3 ETB.");
+                showToast("Check-in successful! You earned 0.2 GHS.");
                 confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
                 updateUI();
             }).catch(err => {
@@ -1718,11 +1754,11 @@
                             <div class="plan-stats-grid">
                                 <div class="plan-stat-box">
                                     <div class="stat-label">Price</div>
-                                    <div class="stat-value">ETB ${p.price}</div>
+                                    <div class="stat-value">GHS ${p.price}</div>
                                 </div>
                                 <div class="plan-stat-box highlight">
                                     <div class="stat-label">Daily</div>
-                                    <div class="stat-value">+ETB ${p.roi}</div>
+                                    <div class="stat-value">+GHS ${p.roi}</div>
                                 </div>
                                 <div class="plan-stat-box">
                                     <div class="stat-label">Cycle</div>
@@ -1731,7 +1767,7 @@
                             </div>
                             <div class="total-return-box">
                                 <span>Total Est. Return</span>
-                                <strong>ETB ${tot}</strong>
+                                <strong>GHS ${tot}</strong>
                             </div>
                             <button class="btn-buy-modern" ${dis} onclick="buyPlan('${key}', ${p.price}, ${p.roi}, ${lmt}, ${dur}, ${hasComm})">
                                 <i class="fa-solid fa-cart-shopping"></i> ${btnTxt}
@@ -1869,7 +1905,7 @@
                                 </div>
                                 <div>
                                     <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; text-transform: uppercase;">${pDetail.name}</h3>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Daily Return: <span style="color: var(--primary-dark); font-weight: 800; font-size: 0.95rem;">ETB ${uPlan.daily}</span></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Daily Return: <span style="color: var(--primary-dark); font-weight: 800; font-size: 0.95rem;">GHS ${uPlan.daily}</span></div>
                                 </div>
                             </div>
 
@@ -1946,7 +1982,7 @@
                     db.ref().update(updates).then(() => {
                         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Release Daily Profits`;
                         btn.disabled = false;
-                        showToast(`Success! ETB ${totalCredited} released to users.`);
+                        showToast(`Success! GHS ${totalCredited} released to users.`);
                         confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
                     }).catch(err => {
                         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Release Daily Profits`;
@@ -1994,7 +2030,7 @@
             isClaiming = true;
             
             const newRewards = userData.rewards - 1;
-            const rewardAmount = 20; 
+            const rewardAmount = 1; 
             
             db.ref('users/' + currentUser).update({ 
                 rewards: newRewards,
@@ -2005,7 +2041,7 @@
                 document.getElementById('claimModalTitle').innerText = "BOOM! Reward Claimed!";
                 document.getElementById('claimModalIcon').className = "fa-solid fa-bomb";
                 document.getElementById('claimModalIcon').style.color = "#ef4444";
-                document.getElementById('claimModalDesc').innerText = "You exploded the reward and earned 20 ETB!";
+                document.getElementById('claimModalDesc').innerText = "You exploded the reward and earned 1 GHS!";
                 document.getElementById('claimModalAmount').innerText = rewardAmount.toFixed(2);
                 document.getElementById('claimSuccessModal').style.display = 'flex';
                 updateUI();
@@ -2026,7 +2062,7 @@
             const txn = document.getElementById('depTransIdPage').value.trim();
             if(!amount || !txn) return showToast("Fill all details");
 
-            if(amount < 1100) return showToast("Min Deposit: 1100 ETB");
+            if(amount < appSettings.minDeposit) return showToast("Min Deposit: " + appSettings.minDeposit + " GHS");
 
             db.ref('deposits').once('value', (snap) => {
                 let used = false;
@@ -2059,7 +2095,7 @@
             const amount = parseFloat(document.getElementById('withAmount').value);
             const pass = document.getElementById('withAuthPass').value;
             
-            if(amount < 300) return showToast("Min Withdraw: 300 ETB");
+            if(amount < appSettings.minWithdraw) return showToast("Min Withdraw: " + appSettings.minWithdraw + " GHS");
             
             if(!userData.totalInvestment || userData.totalInvestment <= 0) {
                 return showToast("You must invest (buy a bike) first to withdraw!");
@@ -2068,7 +2104,7 @@
             if(pass !== userData.bankInfo.withdrawPass) return showToast("Incorrect Password!");
             if(amount > userData.balance) return showToast("Insufficient Balance");
             
-            const fee = amount * 0.16;
+            const fee = amount * (appSettings.withdrawFee / 100);
             const actualAmount = amount - fee;
 
             db.ref('users/' + currentUser).update({ balance: userData.balance - amount }).then(() => {
@@ -2111,7 +2147,7 @@
             incList.innerHTML = `
             <div style="background: linear-gradient(135deg, var(--primary-dark), var(--primary-color)); border-radius: 20px; padding: 25px; text-align: center; color: white; box-shadow: 0 10px 25px rgba(50, 205, 50, 0.3); margin-bottom: 20px;">
                 <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; opacity: 0.9;">Total Bike Revenue</div>
-                <div style="font-size: 2.2rem; font-weight: 800; letter-spacing: 1px;">ETB ${parseFloat(userData.income || 0).toFixed(2)}</div>
+                <div style="font-size: 2.2rem; font-weight: 800; letter-spacing: 1px;">GHS ${parseFloat(userData.income || 0).toFixed(2)}</div>
                 <div style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; margin-top: 15px; display: inline-block; backdrop-filter: blur(5px);">
                     <i class="fa-solid fa-bolt"></i> Auto-added to main balance daily
                 </div>
@@ -2140,7 +2176,7 @@
                             <div style="font-size: 0.65rem; color: #a1a1aa; margin-top: 2px;">Ref: ${d.txnId}</div>
                         </div>
                         <div class="txn-amount-box">
-                            <div class="txn-amount" style="color: var(--text-main);">+ETB ${d.amount}</div>
+                            <div class="txn-amount" style="color: var(--text-main);">+GHS ${d.amount}</div>
                             <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${displayStatus}</div>
                         </div>
                     </div>` + html;
@@ -2171,7 +2207,7 @@
                             <div style="font-size: 0.65rem; color: #ef4444; font-weight:700; margin-top: 2px;">Fee: -16%</div>
                         </div>
                         <div class="txn-amount-box">
-                            <div class="txn-amount" style="color: var(--text-main);">-ETB ${w.amount}</div>
+                            <div class="txn-amount" style="color: var(--text-main);">-GHS ${w.amount}</div>
                             <div class="txn-status" style="background: ${statusBg}; color: ${statusColor};">${displayStatus}</div>
                         </div>
                     </div>` + html;
@@ -2252,7 +2288,7 @@
                     const color = g.active ? "var(--primary-dark)" : "#ef4444";
                     html += `<div style="background:#f4f4f5; padding:10px; border-radius:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
                         <div style="font-weight:bold; font-size:1rem;">${child.key}</div>
-                        <div style="color:${color}; font-weight:800; font-size:0.8rem;">ETB ${g.amount} (${g.active ? 'Active' : 'Used'})</div>
+                        <div style="color:${color}; font-weight:800; font-size:0.8rem;">GHS ${g.amount} (${g.active ? 'Active' : 'Used'})</div>
                     </div>`;
                 });
                 container.innerHTML = html;
@@ -2281,10 +2317,108 @@
                     db.ref('users/' + currentUser).update({ balance: (userData.balance || 0) + amt }).then(() => {
                         isRedeeming = false;
                         document.getElementById('giftCodeInput').value = '';
-                        showToast(`Success! You received ETB ${amt}`);
+                        showToast(`Success! You received GHS ${amt}`);
                         updateUI();
                     });
                 }).catch(() => { isRedeeming = false; });
+            });
+        }
+
+        let appSettings = { regBonus: 300, minDeposit: 1100, minWithdraw: 300, withdrawFee: 16 };
+
+        function saveAppSettings() {
+            const regBonus = parseFloat(document.getElementById('adminRegBonus').value);
+            const minDeposit = parseFloat(document.getElementById('adminMinDeposit').value);
+            const minWithdraw = parseFloat(document.getElementById('adminMinWithdraw').value);
+            const withdrawFee = parseFloat(document.getElementById('adminWithFee').value);
+            if(isNaN(regBonus) || isNaN(minDeposit) || isNaN(minWithdraw) || isNaN(withdrawFee)) return showToast("Fill all fields!");
+            if(withdrawFee < 0 || withdrawFee > 100) return showToast("Fee must be 0–100%!");
+            db.ref('settings/appConfig').set({ regBonus, minDeposit, minWithdraw, withdrawFee }).then(() => {
+                showToast("Settings saved!");
+                document.getElementById('adminRegBonus').value = '';
+                document.getElementById('adminMinDeposit').value = '';
+                document.getElementById('adminMinWithdraw').value = '';
+                document.getElementById('adminWithFee').value = '';
+                loadAdminCurrentSettings();
+            });
+        }
+
+        function loadAdminCurrentSettings() {
+            db.ref('settings/appConfig').once('value', snap => {
+                const el = document.getElementById('adminCurrentSettings');
+                if(!el) return;
+                if(!snap.exists()) { el.innerHTML = "Using default values."; return; }
+                const s = snap.val();
+                el.innerHTML = `<strong>Current Settings:</strong><br>
+                    🎁 Reg Bonus: <b>GHS ${s.regBonus}</b><br>
+                    ⬇️ Min Deposit: <b>GHS ${s.minDeposit}</b><br>
+                    ⬆️ Min Withdraw: <b>GHS ${s.minWithdraw}</b><br>
+                    💸 Withdraw Fee: <b>${s.withdrawFee}%</b>`;
+            });
+        }
+
+        function loadAppSettings(callback) {
+            db.ref('settings/appConfig').once('value', snap => {
+                if(snap.exists()) {
+                    const s = snap.val();
+                    appSettings.regBonus = s.regBonus ?? 300;
+                    appSettings.minDeposit = s.minDeposit ?? 1100;
+                    appSettings.minWithdraw = s.minWithdraw ?? 300;
+                    appSettings.withdrawFee = s.withdrawFee ?? 16;
+                }
+                if(callback) callback();
+            });
+        }
+
+        function saveWhatsAppLinks() {
+            const support = document.getElementById('adminWaSupportLink').value.trim();
+            const group = document.getElementById('adminWaGroupLink').value.trim();
+            if(!support && !group) return showToast("Enter at least one link!");
+            const data = {};
+            if(support) data.support = support;
+            if(group) data.group = group;
+            db.ref('settings/whatsappLinks').update(data).then(() => {
+                showToast("WhatsApp links saved!");
+                document.getElementById('adminWaSupportLink').value = '';
+                document.getElementById('adminWaGroupLink').value = '';
+                loadAdminWaLinks();
+            });
+        }
+
+        function loadAdminWaLinks() {
+            db.ref('settings/whatsappLinks').once('value', snap => {
+                const el = document.getElementById('adminWaCurrentLinks');
+                if(!el) return;
+                if(!snap.exists()) { el.innerHTML = "No links set yet."; return; }
+                const d = snap.val();
+                el.innerHTML = `<strong>Current Links:</strong><br>
+                    ${d.support ? `✅ Support: <span style="color:var(--primary-dark); word-break:break-all;">${d.support}</span><br>` : ''}
+                    ${d.group ? `✅ Group: <span style="color:var(--primary-dark); word-break:break-all;">${d.group}</span>` : ''}`;
+            });
+        }
+
+        function loadSupportLinks() {
+            db.ref('settings/whatsappLinks').once('value', snap => {
+                const container = document.getElementById('supportLinksContainer');
+                if(!container) return;
+                if(!snap.exists()) {
+                    container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Support links not set yet. Please contact admin.</p>`;
+                    return;
+                }
+                const d = snap.val();
+                let html = '';
+                if(d.support) {
+                    html += `<a href="${d.support}" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #25D366; color: white; margin-bottom: 15px; box-shadow: 0 8px 15px rgba(37, 211, 102, 0.3);">
+                        <i class="fa-brands fa-whatsapp" style="font-size:1.5rem;"></i> Contact Support
+                    </a>`;
+                }
+                if(d.group) {
+                    html += `<a href="${d.group}" target="_blank" class="btn-full" style="display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-sizing:border-box; background: #128C7E; color: white; margin-bottom: 15px; box-shadow: 0 8px 15px rgba(18, 140, 126, 0.3);">
+                        <i class="fa-brands fa-whatsapp" style="font-size:1.5rem;"></i> WhatsApp Group
+                    </a>`;
+                }
+                if(!html) html = `<p style="color:var(--text-muted); font-size:0.9rem;">No support links available yet.</p>`;
+                container.innerHTML = html;
             });
         }
 
