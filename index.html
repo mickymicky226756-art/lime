@@ -753,19 +753,12 @@
                     <h4 style="margin-bottom:15px; color:var(--text-main); text-transform:uppercase;">Step 1: Amount</h4>
                     
                     <div class="input-group" style="margin-top:20px; margin-bottom: 10px;">
-                        <label id="depositMinLabel">Amount to Send (Min: 1100 GHS)</label>
+                        <label id="depositMinLabel">Amount to Send (Min: 75 GHS)</label>
                         <input type="number" id="depAmountPage" placeholder="Enter Amount">
                     </div>
 
-                    <div class="quick-amounts">
-                        <button class="amt-btn" onclick="setDepositAmount(1100)">1100</button>
-                        <button class="amt-btn" onclick="setDepositAmount(2700)">2700</button>
-                        <button class="amt-btn" onclick="setDepositAmount(4000)">4000</button>
-                        <button class="amt-btn" onclick="setDepositAmount(8000)">8000</button>
-                        <button class="amt-btn" onclick="setDepositAmount(16000)">16000</button>
-                        <button class="amt-btn" onclick="setDepositAmount(30000)">30000</button>
-                        <button class="amt-btn" onclick="setDepositAmount(50000)">50000</button>
-                        <button class="amt-btn" onclick="setDepositAmount(100000)">100000</button>
+                    <div class="quick-amounts" id="quickAmountsContainer">
+                        <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:0.85rem; padding:10px;">Loading amounts...</div>
                     </div>
 
                     <button class="btn-full" onclick="goToDepositStep(2)">Next Step <i class="fa-solid fa-arrow-right"></i></button>
@@ -812,7 +805,7 @@
 
                 <div id="withdrawInputs">
                     <div class="input-group">
-                        <label>Withdrawal Amount</label>
+                        <label id="withdrawMinLabel">Withdrawal Amount</label>
                         <input type="number" id="withAmount" placeholder="Enter amount (Min 300)">
                     </div>
                     <div id="withdrawFeeLabel" style="font-size:0.75rem; color:#ef4444; margin-top:-5px; margin-bottom:15px; font-weight:bold;">* A 16% withdrawal fee will be deducted.</div>
@@ -1296,12 +1289,16 @@
                 let newCode = ""; const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
                 for(let i=0; i<15; i++) newCode += chars.charAt(Math.floor(Math.random() * chars.length));
                 
-                const newUser = {
-                    name: autoName, phone: phone, password: pass, balance: appSettings.regBonus, income: 0, 
-                    commission: 0, refCode: newCode, referredBy: refCode || "admin", rewards: 0, plans: {}
-                };
-                db.ref('users/' + phone).set(newUser).then(() => {
-                    initApp(newUser, phone); showToast("Account created!");
+                db.ref('settings/appConfig').once('value', cfgSnap => {
+                    const cfg = cfgSnap.exists() ? cfgSnap.val() : {};
+                    const regBonus = cfg.regBonus ?? appSettings.regBonus;
+                    const newUser = {
+                        name: autoName, phone: phone, password: pass, balance: regBonus, income: 0, 
+                        commission: 0, refCode: newCode, referredBy: refCode || "admin", rewards: 0, plans: {}
+                    };
+                    db.ref('users/' + phone).set(newUser).then(() => {
+                        initApp(newUser, phone); showToast("Account created!");
+                    });
                 });
             });
         }
@@ -1545,11 +1542,40 @@
                         bc.insertAdjacentHTML('beforeend', `<div class="bank-box"><div style="font-size:0.8rem;">${b.bankName}</div><div style="font-size:1.3rem; font-weight:800;">${b.accountNumber}</div><div style="font-size:0.9rem;">${b.accountName}</div></div>`);
                     });
                 });
+                db.ref('settings/appConfig').once('value', cfgSnap => {
+                    const cfg = cfgSnap.exists() ? cfgSnap.val() : {};
+                    const minDep = cfg.minDeposit ?? appSettings.minDeposit;
+                    const depLabel = document.getElementById('depositMinLabel');
+                    if(depLabel) depLabel.textContent = `Amount to Send (Min: ${minDep} GHS)`;
+                });
+                // Load plan prices as quick amount buttons
+                db.ref('plans').once('value', planSnap => {
+                    const qc = document.getElementById('quickAmountsContainer');
+                    if(!qc) return;
+                    if(!planSnap.exists()) { qc.innerHTML = ''; return; }
+                    const prices = [];
+                    planSnap.forEach(ch => { const p = ch.val(); if(p.price) prices.push(p.price); });
+                    prices.sort((a,b) => a - b);
+                    qc.innerHTML = prices.map(pr => `<button class="amt-btn" onclick="setDepositAmount(${pr})">${pr}</button>`).join('');
+                });
             }
             
             if(viewName === 'bankcard') generateCaptcha();
             
-            if(viewName === 'withdraw') document.getElementById('withDisplayBal').innerText = parseFloat(userData.balance || 0).toFixed(2);
+            if(viewName === 'withdraw') {
+                document.getElementById('withDisplayBal').innerText = parseFloat(userData.balance || 0).toFixed(2);
+                db.ref('settings/appConfig').once('value', cfgSnap => {
+                    const cfg = cfgSnap.exists() ? cfgSnap.val() : {};
+                    const minWith = cfg.minWithdraw ?? appSettings.minWithdraw;
+                    const feeRate = cfg.withdrawFee  ?? appSettings.withdrawFee;
+                    const feeLabel = document.getElementById('withdrawFeeLabel');
+                    if(feeLabel) feeLabel.textContent = `* A ${feeRate}% withdrawal fee will be deducted.`;
+                    const withLabel = document.getElementById('withdrawMinLabel');
+                    if(withLabel) withLabel.textContent = `Amount (Min: ${minWith} GHS)`;
+                    const withInput = document.getElementById('withAmount');
+                    if(withInput) withInput.placeholder = `Enter amount (Min ${minWith} GHS)`;
+                });
+            }
             if(viewName === 'team') { document.getElementById('invitePageCode').innerText = window.location.origin + window.location.pathname + "?ref=" + userData.refCode; calculateProfileStats(); }
             if(viewName === 'profile') calculateProfileStats();
             if(viewName === 'orders') loadMyOrders();
@@ -2062,7 +2088,10 @@
             const txn = document.getElementById('depTransIdPage').value.trim();
             if(!amount || !txn) return showToast("Fill all details");
 
-            if(amount < appSettings.minDeposit) return showToast("Min Deposit: " + appSettings.minDeposit + " GHS");
+            db.ref('settings/appConfig').once('value', cfgSnap => {
+                const cfg = cfgSnap.exists() ? cfgSnap.val() : {};
+                const minDep = cfg.minDeposit ?? appSettings.minDeposit;
+                if(amount < minDep) return showToast("Min Deposit: " + minDep + " GHS");
 
             db.ref('deposits').once('value', (snap) => {
                 let used = false;
@@ -2084,6 +2113,7 @@
                     document.getElementById('depTransIdPage').value = "";
                 });
             });
+            }); // end appConfig fetch
         }
 
         function submitWithdraw() {
@@ -2094,34 +2124,41 @@
             }
             const amount = parseFloat(document.getElementById('withAmount').value);
             const pass = document.getElementById('withAuthPass').value;
-            
-            if(amount < appSettings.minWithdraw) return showToast("Min Withdraw: " + appSettings.minWithdraw + " GHS");
-            
-            if(!userData.totalInvestment || userData.totalInvestment <= 0) {
-                return showToast("You must invest (buy a bike) first to withdraw!");
-            }
-            
-            if(pass !== userData.bankInfo.withdrawPass) return showToast("Incorrect Password!");
-            if(amount > userData.balance) return showToast("Insufficient Balance");
-            
-            const fee = amount * (appSettings.withdrawFee / 100);
-            const actualAmount = amount - fee;
 
-            db.ref('users/' + currentUser).update({ balance: userData.balance - amount }).then(() => {
-                db.ref('withdrawals').push({ 
-                    type: 'withdraw', 
-                    amount: amount,
-                    actualAmount: actualAmount,
-                    fee: fee, 
-                    user: currentUser, 
-                    phone: userData.phone, 
-                    address: `${userData.bankInfo.bankName} - ${userData.bankInfo.accNum} (${userData.bankInfo.accName})`, 
-                    status: 'pending', 
-                    timestamp: Date.now() 
+            db.ref('settings/appConfig').once('value', cfgSnap => {
+                const cfg = cfgSnap.exists() ? cfgSnap.val() : {};
+                const minWith  = cfg.minWithdraw  ?? appSettings.minWithdraw;
+                const feeRate  = cfg.withdrawFee  ?? appSettings.withdrawFee;
+
+                if(amount < minWith) return showToast("Min Withdraw: " + minWith + " GHS");
+                
+                if(!userData.totalInvestment || userData.totalInvestment <= 0)
+                    return showToast("You must invest (buy a bike) first to withdraw!");
+                
+                if(pass !== userData.bankInfo.withdrawPass) return showToast("Incorrect Password!");
+                if(amount > userData.balance) return showToast("Insufficient Balance");
+                
+                const fee = amount * (feeRate / 100);
+                const actualAmount = amount - fee;
+
+                db.ref('users/' + currentUser).update({ balance: userData.balance - amount }).then(() => {
+                    db.ref('withdrawals').push({ 
+                        type: 'withdraw', 
+                        amount: amount,
+                        actualAmount: actualAmount,
+                        fee: fee, 
+                        user: currentUser, 
+                        phone: userData.phone, 
+                        address: `${userData.bankInfo.bankName} - ${userData.bankInfo.accNum} (${userData.bankInfo.accName})`, 
+                        status: 'pending', 
+                        timestamp: Date.now() 
+                    });
+                    document.getElementById('withAmount').value = ""; 
+                    document.getElementById('withAuthPass').value = "";
+                    showToast("Withdrawal requested!"); 
+                    switchView('home');
                 });
-                document.getElementById('withAmount').value = ""; document.getElementById('withAuthPass').value = "";
-                showToast("Withdrawal requested!"); switchView('home');
-            });
+            }); // end appConfig fetch
         }
 
         function showTxnTab(tab) {
